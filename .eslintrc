@@ -1,0 +1,83 @@
+{
+  /* Extends from AirBnB Configuration */
+  "extends": "airbnb",
+
+  "rules": {
+    /* ESLint Rules */
+    "max-len": [1, 120, 2, { "ignoreComments": false }],
+    "camelcase": 1,
+    "quotes": [2, "double"],
+    "object-curly-spacing": [2, "always"],
+    "brace-style": [2, "stroustrup"],
+    "id-length": 0,
+    "no-else-return": 0,
+    "indent": [2, 2, { "SwitchCase": 1 }],
+    "jsx-quotes": [2, "prefer-double"],
+    "no-underscore-dangle": 0,
+    "prefer-arrow-callback": 0,
+    "arrow-parens": [2, "as-needed", { "requireForBlockBody": false }],
+
+    /* Import Rules */
+    "import/no-extraneous-dependencies": [
+      2,
+      {
+        "devDependencies": true
+      }
+    ],
+    "import/newline-after-import": 0,
+    "no-duplicate-imports": 0,
+    "import/no-duplicates": 2,
+
+    /* React Plugins Rules */
+    "react/sort-comp": [
+      2,
+      {
+        "order": [
+          "lifecycle",
+          "/^on.+$/",
+          "render",
+          "/^render.+$/",
+          "everything-else"
+        ]
+      }
+    ],
+    "react/jsx-boolean-value": 0,
+    "react/jsx-curly-spacing": [2, "always"],
+    "react/jsx-closing-bracket-location": [2, "tag-aligned"],
+    "react/jsx-indent-props": [2, 2],
+    "react/jsx-no-duplicate-props": 2,
+    "react/jsx-no-undef": 2,
+    "react/no-danger": 1,
+    "react/no-direct-mutation-state": 2,
+    "react/no-multi-comp": 2,
+    "react/no-unknown-property": 2,
+    "react/prefer-es6-class": 1,
+    "react/prop-types": 1,
+    "react/react-in-jsx-scope": 2,
+    "react/self-closing-comp": 2,
+    "react/jsx-filename-extension": 0,
+    "react/prefer-stateless-function": 0,
+    "react/forbid-prop-types": 0
+  },
+
+  /* Linting Environment */
+  "env": {
+    "browser": true,
+    "node": true,
+    "es6": true,
+  },
+
+  /* Linting Parser */
+  "parser": "babel-eslint",
+
+  /* Linting Plugins */
+  "plugins": [
+    "react"
+  ],
+
+  /* Global Variable */
+  "globals": {
+    "BROWSER": false,
+    "_FEATURE_": false,
+  }
+}
