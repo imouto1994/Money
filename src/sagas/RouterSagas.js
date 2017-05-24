@@ -1,5 +1,5 @@
 import { fork, take, put, call, race } from "redux-saga/effects";
-import { eventChannel, buffers } from "redux-saga";
+import { eventChannel, buffers, END } from "redux-saga";
 import RouteRecognizer from "route-recognizer";
 import camelCase from "lodash/camelCase";
 import forEach from "lodash/forEach";
@@ -16,6 +16,7 @@ import {
   ROUTE_HISTORY_GO_FORWARD,
   ROUTE_HISTORY_GO_BACK,
 } from "../constants/Actions";
+import { BROWSER } from "../Config";
 
 const HISTORY_ACTIONS = [
   ROUTE_HISTORY_PUSH,
@@ -36,7 +37,14 @@ function createRouteRecognizer(routes) {
 
 function createLocationChannel(history) {
   return eventChannel(
-    emit => history.listen(location => emit(location)),
+    emit => history.listen(location => {
+      emit(location);
+      // On server side, we will only need to emit location change once
+      // After that, we should end the channel
+      if (!BROWSER) {
+        emit(END);
+      }
+    }),
     buffers.expanding(),
   );
 }

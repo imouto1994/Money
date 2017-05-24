@@ -1,19 +1,22 @@
+import path from "path";
 import morgan from "morgan";
 import helmet from "helmet";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
+import favicon from "serve-favicon";
 import compression from "compression";
 import cors from "cors";
 import csurf from "csurf";
 
 import blockBot from "../middlewares/blockBot";
 import healthCheck from "../middlewares/healthCheck";
+import { NODE_ENV } from "../../Config";
 
 /**
  * Setup environment for application server
  */
 export default function (app) {
-  if (process.env.NODE_ENV === "development") {
+  if (NODE_ENV === "development") {
     /* eslint-disable global-require */
     require("../../../webpack");
     /* eslint-enable global-require */
@@ -27,7 +30,7 @@ export default function (app) {
   /**
    * Logger Middleware
    */
-  if (process.env.NODE_ENV === "production") {
+  if (NODE_ENV === "production") {
     app.use(morgan("combined"));
   }
   else {
@@ -57,13 +60,14 @@ export default function (app) {
   app.use(cookieParser());
 
   /**
-   * TODO: FavIcon Middleware
-   */
-
-  /**
    * Compression Middleware
    */
   app.use(compression());
+
+  /**
+   * FavIcon Middleware
+   */
+  app.use(favicon(path.resolve(__dirname, "../../../public/favicons/favicon.ico")));
 
   /**
    * CORS Middleware

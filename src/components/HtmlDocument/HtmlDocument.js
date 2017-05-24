@@ -1,5 +1,6 @@
 import React, { PureComponent } from "react";
 import PropTypes from "prop-types";
+import serialize from "serialize-javascript";
 
 class HtmlDocument extends PureComponent {
   static propTypes = {
@@ -8,7 +9,7 @@ class HtmlDocument extends PureComponent {
     linkComponents: PropTypes.node,
     scriptComponents: PropTypes.node,
     markup: PropTypes.string.isRequired,
-    store: PropTypes.string.isRequired,
+    state: PropTypes.object.isRequired,
     webpackAssets: PropTypes.object,
   };
 
@@ -23,7 +24,7 @@ class HtmlDocument extends PureComponent {
   render() {
     const {
       markup,
-      store,
+      state,
       webpackAssets,
       titleComponent,
       metaComponents,
@@ -41,7 +42,7 @@ class HtmlDocument extends PureComponent {
         <body>
           { /* eslint-disable react/no-danger */ }
           <div id="root" dangerouslySetInnerHTML={ { __html: markup } } />
-          <script dangerouslySetInnerHTML={ { __html: `window.__data=${store};` } } />
+          <script dangerouslySetInnerHTML={ { __html: `window.__data=${serialize(state)};` } } />
           { /* eslint-enable react/no-danger */ }
           { scriptComponents }
           <script src={ `${webpackAssets.main.js}` } />

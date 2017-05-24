@@ -1,19 +1,18 @@
 import { createStore, applyMiddleware, compose } from "redux";
 import { createLogger } from "redux-logger";
-import createSagaMiddleware, { END } from "redux-saga";
+import createSagaMiddleware from "redux-saga";
 import { enableBatching } from "redux-batched-actions";
 import { batchedSubscribe } from "redux-batched-subscribe";
 
 import rootReducer from "../reducers";
+import { NODE_ENV, BROWSER } from "../Config";
 
 const sagaMiddleware = createSagaMiddleware();
-let middlewares;
-if (process.env.NODE_ENV === "development") {
-  const loggerMiddleware = createLogger();
-  middlewares = [sagaMiddleware, loggerMiddleware];
-}
-else {
-  middlewares = [sagaMiddleware];
+const middlewares = [sagaMiddleware];
+if (NODE_ENV === "development") {
+  if (BROWSER) {
+    middlewares.push(createLogger());
+  }
 }
 
 export default function redux(initialState) {
@@ -29,7 +28,7 @@ export default function redux(initialState) {
   );
 
   // Enable Webpack hot module replacement for reducers
-  if (process.env.NODE_ENV === "development") {
+  if (NODE_ENV === "development") {
     if (module.hot) {
       module.hot.accept("../reducers", () => {
         store.replaceReducer(rootReducer);
@@ -41,9 +40,6 @@ export default function redux(initialState) {
   const extendedStore = {
     ...store,
     runSaga: sagaMiddleware.run,
-    close: () => {
-      store.dispatch(END);
-    },
   };
 
   return extendedStore;
