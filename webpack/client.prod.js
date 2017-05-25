@@ -1,4 +1,6 @@
 // Babel-register required for some required modules that are written in ES6
+// This is here since this webpack config will be run directly from command
+// instead of being referred by Webpack Dev Server like in development environment
 require("babel-register")({
   presets: ["es2015", "stage-0"],
 });

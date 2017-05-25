@@ -1,4 +1,4 @@
-import { Map } from "immutable";
+import { Map, fromJS } from "immutable";
 
 import {
   ROUTE_CHANGE_COMPONENT,
@@ -39,4 +39,12 @@ export default function routeReducer(state = initialState, action) {
     default:
       return state;
   }
+}
+
+export function dehydrate(state) {
+  return state.delete("element").toJS();
+}
+
+export function rehydrate(dehydratedState) {
+  return fromJS(dehydratedState);
 }

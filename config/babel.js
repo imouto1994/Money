@@ -17,6 +17,9 @@ const server = {
     "stage-0",
     "react",
   ],
+  plugins: [
+    "dynamic-import-node",
+  ],
 };
 
 // Babel config for client

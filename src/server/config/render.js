@@ -6,6 +6,7 @@ import { END } from "redux-saga";
 
 import Root from "../../components/Root";
 import HtmlDocument from "../../components/HtmlDocument";
+import { dehydrate } from "../../reducers";
 import configureStore from "../../redux";
 import createRootSaga from "../../sagas";
 import { NODE_ENV } from "../../Config";
@@ -41,7 +42,7 @@ function render(req, res, next) {
           metaComponents={ head.meta.toComponent() }
           linkComponents={ head.link.toComponent() }
           scriptComponents={ head.script.toComponent() }
-          state={ store.getState() }
+          state={ dehydrate(store.getState()) }
           markup={ componentMarkUp }
           webpackAssets={ webpackAssets }
         />,

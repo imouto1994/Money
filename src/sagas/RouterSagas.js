@@ -5,7 +5,7 @@ import camelCase from "lodash/camelCase";
 import forEach from "lodash/forEach";
 import get from "lodash/get";
 
-import { updatePath, changeComponent } from "../actions/RouteActions";
+import { updatePath } from "../actions/RouteActions";
 import { getRequireComponent } from "../routes";
 import { parseQueryString } from "../utils/route";
 import { isPutEffectWithAction, isBlockEffect } from "../utils/saga";
@@ -109,26 +109,23 @@ function* watchLocationChange(routes, history) {
     if (route) {
       const { handler, params } = route;
       const { name, saga } = handler;
-
+      routeHandler = saga;
+      requireComponent = getRequireComponent(name);
       routeArgs = {
         name,
         path: pathName,
         params,
         query: parseQueryString(location.search),
       };
-      routeHandler = saga;
-      requireComponent = getRequireComponent(name);
 
       yield put(updatePath(routeArgs));
     }
     else {
       // TODO: To be filled in
     }
-    if (requireComponent != null) {
-      const component = yield requireComponent();
-      yield put(changeComponent(component));
-    }
-    const iterator = routeHandler(routeArgs);
+
+    // Route fetching logic
+    const iterator = routeHandler({ ...routeArgs, requireComponent });
     const { loc } = yield call(handleRoute, iterator, channel);
     if (loc != null) {
       nextLocation = loc;

@@ -8,18 +8,20 @@ import createBrowserHistory from "history/createBrowserHistory";
 /* eslint-enable import/first */
 
 import Root from "../components/Root";
+import { rehydrate } from "../reducers";
 import configureStore from "../redux";
 import createRootSaga from "../sagas";
+import { changeComponent } from "../actions/RouteActions";
+import { getRequireComponent } from "../routes";
 
-// import { push } from "../actions/RouteActions";
-
-const store = configureStore(window.__data);
+const store = configureStore(rehydrate(window.__data));
 const history = createBrowserHistory();
 store.runSaga(createRootSaga(history));
-
-ReactDOM.render(
-  <Root store={ store } />,
-  document.getElementById("root"),
-);
-
-// store.dispatch(push("/p/123/"));
+getRequireComponent(store.getState().Route.get("name"))()
+  .then(Component => {
+    store.dispatch(changeComponent(Component));
+    ReactDOM.render(
+      <Root store={ store } />,
+      document.getElementById("root"),
+    );
+  });

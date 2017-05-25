@@ -42,7 +42,7 @@ class HtmlDocument extends PureComponent {
         <body>
           { /* eslint-disable react/no-danger */ }
           <div id="root" dangerouslySetInnerHTML={ { __html: markup } } />
-          <script dangerouslySetInnerHTML={ { __html: `window.__data=${serialize(state)};` } } />
+          <script dangerouslySetInnerHTML={ { __html: `window.__data=${serialize(state, { isJSON: true })};` } } />
           { /* eslint-enable react/no-danger */ }
           { scriptComponents }
           <script src={ `${webpackAssets.main.js}` } />
