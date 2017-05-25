@@ -5,7 +5,8 @@ import camelCase from "lodash/camelCase";
 import forEach from "lodash/forEach";
 import get from "lodash/get";
 
-import { updatePath } from "../actions/RouteActions";
+import { updatePath, changeComponent } from "../actions/RouteActions";
+import { getRequireComponent } from "../routes";
 import { parseQueryString } from "../utils/route";
 import { isPutEffectWithAction, isBlockEffect } from "../utils/saga";
 import {
@@ -100,6 +101,7 @@ function* watchLocationChange(routes, history) {
   while (true) {
     let routeArgs;
     let routeHandler;
+    let requireComponent;
     const location = nextLocation != null ? nextLocation : yield take(channel, "");
     const pathName = location.pathname;
     const route = get(router.recognize(pathName), 0);
@@ -107,6 +109,7 @@ function* watchLocationChange(routes, history) {
     if (route) {
       const { handler, params } = route;
       const { name, saga } = handler;
+
       routeArgs = {
         name,
         path: pathName,
@@ -114,11 +117,16 @@ function* watchLocationChange(routes, history) {
         query: parseQueryString(location.search),
       };
       routeHandler = saga;
+      requireComponent = getRequireComponent(name);
 
       yield put(updatePath(routeArgs));
     }
     else {
       // TODO: To be filled in
+    }
+    if (requireComponent != null) {
+      const component = yield requireComponent();
+      yield put(changeComponent(component));
     }
     const iterator = routeHandler(routeArgs);
     const { loc } = yield call(handleRoute, iterator, channel);

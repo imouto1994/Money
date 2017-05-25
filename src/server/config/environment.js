@@ -16,12 +16,6 @@ import { NODE_ENV } from "../../Config";
  * Setup environment for application server
  */
 export default function (app) {
-  if (NODE_ENV === "development") {
-    /* eslint-disable global-require */
-    require("../../../webpack");
-    /* eslint-enable global-require */
-  }
-
   /**
    * Let 'express' server know that it is behind a proxy
    */

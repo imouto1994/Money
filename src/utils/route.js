@@ -1,5 +1,6 @@
 import qs from "qs";
 
+// eslint-disable-next-lint import/prefer-default-export
 export function parseQueryString(str) {
   let queryString = str;
   if (queryString.indexOf("?") === 0) {

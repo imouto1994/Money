@@ -20,3 +20,6 @@ flow-typed/
 
 # Webpack Stats
 src/server/config/webpack-assets.json
+
+# Webpack Build Files
+public/build/
