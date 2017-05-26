@@ -1,10 +1,12 @@
 import { connect } from "react-redux";
 
 import Application from "./Application";
+import { getRouteName, getRouteComponent } from "../../selectors/RouteSelectors";
 
 function selectFromStore(store) {
   return {
-    pageComponent: store.Route.get("element"),
+    routeComponent: getRouteComponent(store),
+    routeName: getRouteName(store),
   };
 }
 

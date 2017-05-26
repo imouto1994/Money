@@ -9,6 +9,9 @@ if (process.env.NODE_ENV === "development") {
 }
 /* eslint-enable global-require */
 
+// Polyfill Promise on server-side using "bluebird"
+global.Promise = require("bluebird");
+
 // Attach feature flags as a global variable
 global._FEATURE_ = require("./feature");
 

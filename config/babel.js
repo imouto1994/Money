@@ -19,6 +19,7 @@ const server = {
   ],
   plugins: [
     "dynamic-import-node",
+    // "transform-flow-strip-types",
   ],
 };
 
@@ -39,6 +40,7 @@ const client = {
       "transform-runtime",
       // Remove all polyfills and shim for generators
       { polyfill: false, regenerator: false },
+      "transform-flow-strip-types",
     ],
   ],
 };

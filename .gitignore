@@ -19,7 +19,7 @@ config.stage.sh
 flow-typed/
 
 # Webpack Stats
-src/server/config/webpack-assets.json
+src/server/config/webpack-stats.json
 
 # Webpack Build Files
 public/build/

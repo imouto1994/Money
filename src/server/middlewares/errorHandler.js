@@ -4,10 +4,11 @@ import DebugEnvs from "../../constants/DebugEnvs";
 
 const log = debug(DebugEnvs.SERVER);
 
+/* eslint-disable no-unused-vars */
 /**
  * Middleware to handle generic error
  */
-export default function (err, req, res) {
+export default function (err, req, res, next) {
   if (err != null) {
     log(`Error on request ${req.method} ${req.url}`);
     log(err);

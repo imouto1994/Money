@@ -1,67 +1,58 @@
 import { put } from "redux-saga/effects";
+import keyMirror from "keymirror";
+import mapValues from "lodash/mapValues";
 
 import { changeComponent } from "../actions/RouteActions";
-import { BROWSER } from "../Config";
+import PageHome from "../components/PageHome";
+import PageProduct from "../components/PageProduct";
 
-function generateImport(path) {
-  return function getComponent() {
-    if (BROWSER) {
-      return import(`../components/${path}/index.js`)
-        .then(res => res.default);
-    }
-    else {
-      return new Promise((resolve, reject) => {
-        try {
-          // eslint-disable-next-line global-require, import/no-dynamic-require
-          const module = require(`..//components/${path}`).default;
-          resolve(module);
-        }
-        catch (error) {
-          reject(error);
-        }
-      });
-    }
-  };
-}
+// Route Names
+const RouteNames = mapValues(
+  keyMirror({
+    HOME: null,
+    PRODUCT: null,
+  }),
+  value => value.toLowerCase(),
+);
 
-// List of routes
+// List of application routes
 const Routes = [
   {
     path: "/",
     handler: {
-      name: "home",
-      componentPath: "PageHome",
-      saga: function* homeRouteHandler({ requireComponent }) {
-        const PageHome = yield requireComponent();
-        yield put(changeComponent(PageHome));
+      name: RouteNames.HOME,
+      component: PageHome,
+      saga: function* homeRouteHandler({ RouteComponent }) {
+        yield RouteComponent.preload();
+        yield put(changeComponent(RouteComponent));
       },
     },
   },
   {
     path: "/p/:productId/",
     handler: {
-      name: "product",
-      componentPath: "PageProduct",
-      saga: function* productRouteHandler({ requireComponent }) {
-        const PageProduct = yield requireComponent();
-        yield put(changeComponent(PageProduct));
+      name: RouteNames.PRODUCT,
+      component: PageProduct,
+      saga: function* productRouteHandler({ RouteComponent }) {
+        yield RouteComponent.preload();
+        yield put(changeComponent(RouteComponent));
       },
     },
   },
 ];
 
-// Dictionary from each route to function to fetch its corresponding Component
+// Dictionary from each route to the respective function for fetching Route Component
 const RouteComponentMap = Routes.reduce(
   (m, route) => {
     // eslint-disable-next-line no-param-reassign
-    m[route.handler.name] = generateImport(route.handler.componentPath);
+    m[route.handler.name] = route.handler.component;
     return m;
   },
   {},
 );
 
-function getRequireComponent(routeName) {
+function getRouteComponent(routeName) {
   return RouteComponentMap[routeName];
 }
 
-export { Routes, getRequireComponent };
+export { Routes, getRouteComponent };

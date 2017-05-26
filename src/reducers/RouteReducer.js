@@ -10,30 +10,28 @@ import {
  */
 const initialState = new Map({
   // Page Element to be presented to user
-  element: undefined,
-  // Current Route
-  route: undefined,
+  component: undefined,
+  // Route name
+  name: undefined,
   // Path of the current route
   path: undefined,
   // Params of the route
   params: undefined,
   // Query of the route
   query: undefined,
-  // Route name
-  name: undefined,
 });
 
 /**
  * Reducer for 'Route' module of Redux Store
- * @param  {Object} state
+ * @param  {Immutable Map} state
  * @param  {Action} action
- * @return {Object}
+ * @return {Immutable Map}
  */
 export default function routeReducer(state = initialState, action) {
   const { type, payload } = action;
   switch (type) {
     case ROUTE_CHANGE_COMPONENT:
-      return state.set("element", payload);
+      return state.set("component", payload);
     case ROUTE_UPDATE_PATH:
       return state.merge(payload);
     default:
@@ -41,10 +39,20 @@ export default function routeReducer(state = initialState, action) {
   }
 }
 
+/**
+ * Dehydrate state for passing to client on server side
+ * @param {Immutable Map} state
+ * @return {Object} [description]
+ */
 export function dehydrate(state) {
-  return state.delete("element").toJS();
+  return state.delete("component").toJS();
 }
 
+/**
+ * Rehydrate state for passing to Redux store on browser side
+ * @param {Object} dehydratedState
+ * @return {Immutable Map}
+ */
 export function rehydrate(dehydratedState) {
   return fromJS(dehydratedState);
 }

@@ -1,54 +1,67 @@
 import React, { PureComponent } from "react";
 import PropTypes from "prop-types";
 import serialize from "serialize-javascript";
+import get from "lodash/get";
 
 class HtmlDocument extends PureComponent {
   static propTypes = {
-    titleComponent: PropTypes.node,
-    metaComponents: PropTypes.node,
-    linkComponents: PropTypes.node,
-    scriptComponents: PropTypes.node,
+    helmet: PropTypes.object.isRequired,
     markup: PropTypes.string.isRequired,
     state: PropTypes.object.isRequired,
+    asyncChunks: PropTypes.array,
     webpackAssets: PropTypes.object,
   };
 
   static defaultProps = {
-    titleComponent: undefined,
+    asyncChunks: [],
     webpackAssets: {},
-    metaComponents: [],
-    linkComponents: [],
-    scriptComponents: [],
   };
 
   render() {
     const {
       markup,
       state,
+      helmet,
       webpackAssets,
-      titleComponent,
-      metaComponents,
-      linkComponents,
-      scriptComponents,
     } = this.props;
 
     return (
       <html lang="en">
         <head>
-          { titleComponent }
-          { metaComponents }
-          { linkComponents }
+          { helmet.title.toComponent() }
+          { helmet.meta.toComponent() }
+          { helmet.link.toComponent() }
         </head>
         <body>
-          { /* eslint-disable react/no-danger */ }
+          { /* eslint-disable react/no-danger, max-len */ }
           <div id="root" dangerouslySetInnerHTML={ { __html: markup } } />
           <script dangerouslySetInnerHTML={ { __html: `window.__data=${serialize(state, { isJSON: true })};` } } />
-          { /* eslint-enable react/no-danger */ }
-          { scriptComponents }
-          <script src={ `${webpackAssets.main.js}` } />
+          <script dangerouslySetInnerHTML={ { __html: `window.__webpackAssets=${serialize(webpackAssets, { isJSON: true })};` } } />
+          { /* eslint-enable react/no-danger, max-len */ }
+          { helmet.script.toComponent() }
+          {
+            this
+              .getApplicationScripts()
+              .map((script, i) => <script key={ i } async={ script.async } src={ script.path } />)
+          }
         </body>
       </html>
     );
+  }
+
+  getApplicationScripts() {
+    const { webpackAssets, asyncChunks } = this.props;
+    const scripts = [
+      { path: webpackAssets.js.manifest },
+      { path: webpackAssets.js.vendor },
+      ...asyncChunks
+        .map(path => get(webpackAssets, ["modules", path]))
+        .filter(f => f != null)
+        .map(f => ({ path: f })),
+      { path: webpackAssets.js.main },
+    ];
+
+    return scripts;
   }
 }
 

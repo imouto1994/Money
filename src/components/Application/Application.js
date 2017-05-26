@@ -1,23 +1,30 @@
 import React, { PureComponent } from "react";
 import PropTypes from "prop-types";
+import { Map } from "immutable";
 
 class Application extends PureComponent {
   static propTypes = {
-    pageComponent: PropTypes.func,
+    routeComponent: PropTypes.func,
   };
 
   static defaultProps = {
-    pageComponent: undefined,
+    routeComponent: undefined,
+    routeName: undefined,
+    chunkScripts: new Map(),
   };
 
   render() {
-    const { pageComponent: PageComponent } = this.props;
+    const { routeComponent: RouteComponent } = this.props;
 
-    if (PageComponent != null) {
+    // Selected component for display in this current route
+    if (RouteComponent != null) {
       return (
-        <PageComponent />
+        <div>
+          <RouteComponent />
+        </div>
       );
     }
+    // Placeholder when no component is selected
     else {
       return (
         <div>

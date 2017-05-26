@@ -24,6 +24,7 @@ const serverOptions = {
   stats: "normal",
   hot: true,
   publicPath: WebpackConfig.output.publicPath,
+  headers: { "Access-Control-Allow-Origin": "*" },
 };
 
 const webpackCompiler = webpack(WebpackConfig);

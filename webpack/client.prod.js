@@ -20,6 +20,7 @@ const publicPath = `${config.ASSETS_ROOT_URL}/build/`;
 /**
 * Configuration for client bundle in production mode
 */
+// TODO: Update config with all the changes
 module.exports = {
   target: "web",
   entry: {

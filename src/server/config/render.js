@@ -3,6 +3,8 @@ import { renderToString, renderToStaticMarkup } from "react-dom/server";
 import Helmet from "react-helmet";
 import createMemoryHistory from "history/createMemoryHistory";
 import { END } from "redux-saga";
+import path from "path";
+import { flushServerSideRequirePaths } from "react-loadable";
 
 import Root from "../../components/Root";
 import HtmlDocument from "../../components/HtmlDocument";
@@ -14,18 +16,18 @@ import { NODE_ENV } from "../../Config";
 let webpackAssets;
 if (NODE_ENV === "production") {
   // eslint-disable-next-line global-require
-  webpackAssets = require("./webpack-assets.json");
+  webpackAssets = require("./webpack-stats.json");
 }
 
 // eslint-disable-next-line no-unused-vars
 function render(req, res, next) {
   if (NODE_ENV === "development") {
     // eslint-disable-next-line global-require
-    webpackAssets = require("./webpack-assets.json");
+    webpackAssets = require("./webpack-stats.json");
 
     // Do not cache webpack stats: the script file would change since
     // hot module replacement is enabled in the development env
-    delete require.cache[require.resolve("./webpack-assets.json")];
+    delete require.cache[require.resolve("./webpack-stats.json")];
   }
 
   const store = configureStore();
@@ -35,16 +37,18 @@ function render(req, res, next) {
     .done
     .then(() => {
       const componentMarkUp = renderToString(<Root store={ store } />);
-      const head = Helmet.rewind();
+      const rootDir = path.resolve(__dirname, "../../../");
+      const asyncChunks = flushServerSideRequirePaths()
+        .map(p => p.replace(rootDir, "."))
+        .map(p => `${p}.js`);
+      const helmet = Helmet.renderStatic();
       const html = renderToStaticMarkup(
         <HtmlDocument
-          titleComponent={ head.title.toComponent() }
-          metaComponents={ head.meta.toComponent() }
-          linkComponents={ head.link.toComponent() }
-          scriptComponents={ head.script.toComponent() }
+          helmet={ helmet }
           state={ dehydrate(store.getState()) }
           markup={ componentMarkUp }
           webpackAssets={ webpackAssets }
+          asyncChunks={ asyncChunks }
         />,
       );
       const docType = "<!DOCTYPE html>";

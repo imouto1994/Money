@@ -7,14 +7,23 @@ import { batchedSubscribe } from "redux-batched-subscribe";
 import rootReducer from "../reducers";
 import { NODE_ENV, BROWSER } from "../Config";
 
+// List of middlewares
+const middlewares = [];
+// Add Saga middleware
 const sagaMiddleware = createSagaMiddleware();
-const middlewares = [sagaMiddleware];
+middlewares.push(sagaMiddleware);
+// Add "redux-logger" on client side
 if (NODE_ENV === "development") {
   if (BROWSER) {
     middlewares.push(createLogger());
   }
 }
 
+/**
+ * Initialize Redux
+ * @param {Object} initialState - initial state for the store
+ * This is necessary for the store to rehydrate on client side
+ */
 export default function redux(initialState) {
   const store = createStore(
     // Batch actions
@@ -36,7 +45,7 @@ export default function redux(initialState) {
     }
   }
 
-  // Attach some helper functions for 'redux-saga' to work on server-side
+  // Attach some helper functions for running 'redux-saga'
   const extendedStore = {
     ...store,
     runSaga: sagaMiddleware.run,

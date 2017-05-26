@@ -57,7 +57,8 @@
     "react/self-closing-comp": 2,
     "react/jsx-filename-extension": 0,
     "react/prefer-stateless-function": 0,
-    "react/forbid-prop-types": 0
+    "react/forbid-prop-types": 0,
+    "react/no-array-index-key": 0,
   },
 
   /* Linting Environment */

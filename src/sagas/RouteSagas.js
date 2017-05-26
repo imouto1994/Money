@@ -6,7 +6,6 @@ import forEach from "lodash/forEach";
 import get from "lodash/get";
 
 import { updatePath } from "../actions/RouteActions";
-import { getRequireComponent } from "../routes";
 import { parseQueryString } from "../utils/route";
 import { isPutEffectWithAction, isBlockEffect } from "../utils/saga";
 import {
@@ -101,16 +100,16 @@ function* watchLocationChange(routes, history) {
   while (true) {
     let routeArgs;
     let routeHandler;
-    let requireComponent;
+    let RouteComponent;
     const location = nextLocation != null ? nextLocation : yield take(channel, "");
     const pathName = location.pathname;
     const route = get(router.recognize(pathName), 0);
 
     if (route) {
       const { handler, params } = route;
-      const { name, saga } = handler;
+      const { name, saga, preload, component } = handler;
       routeHandler = saga;
-      requireComponent = getRequireComponent(name);
+      RouteComponent = component;
       routeArgs = {
         name,
         path: pathName,
@@ -125,7 +124,7 @@ function* watchLocationChange(routes, history) {
     }
 
     // Route fetching logic
-    const iterator = routeHandler({ ...routeArgs, requireComponent });
+    const iterator = routeHandler({ ...routeArgs, RouteComponent });
     const { loc } = yield call(handleRoute, iterator, channel);
     if (loc != null) {
       nextLocation = loc;

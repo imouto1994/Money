@@ -1,12 +1,12 @@
 const webpack = require("webpack");
 const path = require("path");
 const mapValues = require("lodash/mapValues");
-const AssetsPlugin = require("assets-webpack-plugin");
 
 const { SERVER_PORT } = require("../config").default;
 const clientConfig = require("../config").default.createConfig(true);
 const { client: babelClientConfig } = require("../config/babel");
 const featureFlags = require("../feature");
+const writeStats = require("./utils/writeStats").default;
 
 const ASSETS_PATH = path.resolve(__dirname, "../public/build");
 const WEBPACK_HOST = "localhost";
@@ -30,6 +30,15 @@ module.exports = {
       "webpack/hot/only-dev-server",
       // Client entry point
       "./src/client/index.js",
+    ],
+    vendor: [
+      "react",
+      "react-dom",
+      "prop-types",
+      "redux",
+      "react-redux",
+      "reselect",
+      "redux-saga",
     ],
   },
   // Output for bundle
@@ -111,15 +120,17 @@ module.exports = {
   },
   // List of injected plugins
   plugins: [
-    new AssetsPlugin({
-      path: path.resolve(__dirname, "../src/server/config/"),
-    }),
-
     // Ignore node_modules so CPU usage with poll watching drops significantly.
     new webpack.WatchIgnorePlugin([
       path.resolve(__dirname, "../node_modules/"),
       path.resolve(__dirname, "../public/"),
     ]),
+
+    // Common Chunk Plugin
+    new webpack.optimize.CommonsChunkPlugin({
+      names: ["vendor", "manifest"],
+      minChunks: Infinity,
+    }),
 
     // Enable Hot Reload for development environment
     new webpack.HotModuleReplacementPlugin(),
@@ -130,5 +141,9 @@ module.exports = {
       "process.env": mapValues(clientConfig, value => JSON.stringify(value)),
       _FEATURE_: mapValues(featureFlags, value => JSON.stringify(value)),
     }),
+
+    function StatsWriterPlugin() {
+      this.plugin("done", writeStats);
+    },
   ],
 };
