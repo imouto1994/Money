@@ -32,11 +32,8 @@ store.runSaga(createRootSaga(history));
 
 // Fetch the necessary chunk for the route
 const RouteComponent = getRouteComponent(store.getState().Route.get("name"));
-RouteComponent.preload()
-  .then(() => {
-    store.dispatch(changeComponent(RouteComponent));
-    render(store);
-  });
+store.dispatch(changeComponent(RouteComponent));
+render(store);
 
 // Enable Webpack hot module replacement for React component
 // TODO: Hot reload does not seem to work with code splitting
