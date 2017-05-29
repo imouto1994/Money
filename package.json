@@ -9,6 +9,8 @@
     "dev": "yarn run dev-server & yarn run dev-webpack",
     "dev-server": ". ./config.dev.sh && NODE_ENV=development DEBUG=MONEY_* nodemon index",
     "dev-webpack": ". ./config.dev.sh && NODE_ENV=development DEBUG=MONEY_* node ./webpack",
+    "build": ". ./config.dev.sh && [ -d public/build ] && rm -r public/build; NODE_ENV=production DEBUG=MONEY_* webpack --config ./webpack/client.prod.js",
+    "prod": ". ./config.dev.sh && NODE_ENV=production DEBUG=MONEY_* node index",
     "lint": "eslint src"
   },
   "dependencies": {

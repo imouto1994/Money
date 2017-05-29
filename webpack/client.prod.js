@@ -13,6 +13,7 @@ const mapValues = require("lodash/mapValues");
 const config = require("../src/Config").default;
 const { client: babelClientConfig } = require("../config/babel");
 const featureFlags = require("../feature");
+const writeStats = require("./utils/writeStats").default;
 
 const assetsPath = path.join(__dirname, "../public/build");
 const publicPath = `${config.ASSETS_ROOT_URL}/build/`;
@@ -25,6 +26,15 @@ module.exports = {
   target: "web",
   entry: {
     main: "./src/client.js",
+    vendor: [
+      "react",
+      "react-dom",
+      "prop-types",
+      "redux",
+      "react-redux",
+      "reselect",
+      "redux-saga",
+    ],
   },
   output: {
     path: assetsPath,
@@ -43,6 +53,9 @@ module.exports = {
               name: "[name]-[hash].[ext]",
             },
           },
+        ],
+        include: [
+          path.resolve(__dirname, "../src/"),
         ],
       },
       {
@@ -94,8 +107,8 @@ module.exports = {
             },
           ],
         }),
-        exclude: [
-          path.resolve(__dirname, "../node_modules/"),
+        include: [
+          path.resolve(__dirname, "../src/"),
         ],
       },
     ],
@@ -106,6 +119,12 @@ module.exports = {
 
     // Bundle CSS file from the "extract-text-plugin" loader
     new ExtractTextPlugin("[name]-[hash].css"),
+
+    // Common Chunk Plugin
+    new webpack.optimize.CommonsChunkPlugin({
+      names: ["vendor", "manifest"],
+      minChunks: Infinity,
+    }),
 
     // Environment variables
     new webpack.DefinePlugin({
@@ -132,5 +151,9 @@ module.exports = {
         screw_ie8: true,
       },
     }),
+
+    function StatsWriterPlugin() {
+      this.plugin("done", writeStats);
+    },
   ],
 };
