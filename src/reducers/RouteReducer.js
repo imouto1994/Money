@@ -45,6 +45,7 @@ export default function routeReducer(state = initialState, action) {
  * @return {Object} [description]
  */
 export function dehydrate(state) {
+  // Delete property 'component' since it cannot be stringified into JSON format
   return state.delete("component").toJS();
 }
 

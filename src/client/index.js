@@ -39,6 +39,7 @@ RouteComponent.preload()
   });
 
 // Enable Webpack hot module replacement for React component
+// TODO: Hot reload does not seem to work with code splitting
 if (NODE_ENV === "development") {
   if (module.hot) {
     module.hot.accept("./index", () => render(store));
