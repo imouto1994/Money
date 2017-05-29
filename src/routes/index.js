@@ -41,7 +41,7 @@ const Routes = [
   },
 ];
 
-// Dictionary from each route to the respective function for fetching Route Component
+// Dictionary from each route to its respective component to be displayed
 const RouteComponentMap = Routes.reduce(
   (m, route) => {
     // eslint-disable-next-line no-param-reassign
