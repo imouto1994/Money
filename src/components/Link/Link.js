@@ -9,10 +9,12 @@ class Link extends PureComponent {
     children: PropTypes.node.isRequired,
     onClick: PropTypes.func,
     dispatch: PropTypes.func.isRequired,
+    className: PropTypes.string,
   };
 
   static defaultProps = {
     onClick: undefined,
+    className: undefined,
   };
 
   onClick = e => {
@@ -27,10 +29,10 @@ class Link extends PureComponent {
   };
 
   render() {
-    const { href, children } = this.props;
+    const { href, className, children } = this.props;
 
     return (
-      <a href={ href } target="_self" onClick={ this.onClick }>
+      <a href={ href } target="_self" onClick={ this.onClick } className={ className }>
         { children }
       </a>
     );

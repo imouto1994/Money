@@ -13,7 +13,7 @@ class HtmlDocument extends PureComponent {
   };
 
   static defaultProps = {
-    asyncChunks: [],
+    asyncModules: [],
     webpackAssets: {},
   };
 
@@ -22,7 +22,6 @@ class HtmlDocument extends PureComponent {
       markup,
       state,
       helmet,
-      webpackAssets,
     } = this.props;
 
     return (
@@ -36,7 +35,6 @@ class HtmlDocument extends PureComponent {
           { /* eslint-disable react/no-danger, max-len */ }
           <div id="root" dangerouslySetInnerHTML={ { __html: markup } } />
           <script dangerouslySetInnerHTML={ { __html: `window.__data=${serialize(state, { isJSON: true })};` } } />
-          <script dangerouslySetInnerHTML={ { __html: `window.__webpackAssets=${serialize(webpackAssets, { isJSON: true })};` } } />
           { /* eslint-enable react/no-danger, max-len */ }
           { helmet.script.toComponent() }
           {

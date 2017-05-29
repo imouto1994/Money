@@ -3,6 +3,8 @@ import React, { PureComponent } from "react";
 import Link from "../Link";
 import PageHome from "../PageHome";
 
+import styles from "./PageProduct.css";
+
 class PageProduct extends PureComponent {
   componentDidMount() {
     PageHome.preload();
@@ -10,12 +12,12 @@ class PageProduct extends PureComponent {
 
   render() {
     return (
-      <div>
-        <h1>
+      <div className={ styles.container }>
+        <h1 className={ styles.header }>
           PRODUCT
         </h1>
-        <div>
-          <Link href="/">
+        <div className={ styles.links }>
+          <Link href="/" className={ styles.link }>
             HOME PAGE
           </Link>
         </div>

@@ -73,7 +73,7 @@ function getModuleAssetsMap(stats, publicPath) {
   return modules.reduce(
     (map, module) => {
       // eslint-disable-next-line no-param-reassign
-      map[module.name] = flatten(module.chunks.map(chunkId => chunkAssetsMap[chunkId])).map(
+      map[module.name] = flatten(module.chunks.map(chunkId => chunkAssetsMap[chunkId])).filter(
         (asset, i, arr) => arr.indexOf(asset) === i,
       );
       return map;
