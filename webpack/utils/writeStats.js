@@ -6,14 +6,14 @@ const mapValues = require("lodash/mapValues");
 const STATS_FILE_PATH = path.resolve(__dirname, "../../src/server/config/webpack-stats.json");
 
 /**
- * [getChunkAssets description]
- * @param {[type]} chunkName [description]
- * @param {String} extension [description]
- * @param {[type]} stats [description]
- * @param {[type]} publicPath [description]
- * @return {[type]} [description]
+ * Get assets for a chunk with specific extension
+ * @param {String} chunkName
+ * @param {String} extension
+ * @param {Object} stats
+ * @param {String} publicPath
+ * @return {Array}
  */
-function getChunkAssets(chunkName, extension = "js", stats, publicPath) {
+function getChunkAssetsWithExtension(chunkName, extension = "js", stats, publicPath) {
   let chunkAssets = stats.assetsByChunkName[chunkName];
 
   // a chunk could be a string or an array, so make sure it is an array
@@ -26,25 +26,52 @@ function getChunkAssets(chunkName, extension = "js", stats, publicPath) {
     .map(asset => `${publicPath}${asset}`); // add public path to it
 }
 
-/* eslint-disable no-param-reassign */
 /**
- * [getModuleFilesMap description]
- * @param {[type]} stats [description]
- * @param {[type]} publicPath [description]
- * @return {[type]} [description]
+ * Get map from each chunk to its list of assets with specific extension
+ * @param {String} extension
+ * @param {Object} stats
+ * @param {String} publicPath
+ * @return {Object}
  */
-function getModuleFilesMap(stats, publicPath) {
-  const { modules, chunks } = stats;
-  const chunkFilesMap = chunks.reduce(
+function getChunkAssetsMapWithExtension(extension = "js", stats, publicPath) {
+  const { assetsByChunkName } = stats;
+  return mapValues(
+    assetsByChunkName,
+    (_, chunkName) => getChunkAssetsWithExtension(chunkName, extension, stats, publicPath),
+  );
+}
+
+/**
+ * Get a map from each chunk to its list of files
+ * @param {Object} stats
+ * @param {String} publicPath [description]
+ * @return {Object}
+ */
+function getChunkFilesMap(stats, publicPath) {
+  const { chunks } = stats;
+  return chunks.reduce(
     (map, chunk) => {
+      // eslint-disable-next-line no-param-reassign
       map[chunk.id] = chunk.files.map(file => `${publicPath}${file}`);
       return map;
     },
     {},
   );
+}
+
+/**
+ * Get a map from each module to its list of related chunk files
+ * @param {Object} stats
+ * @param {String} publicPath
+ * @return {Object}
+ */
+function getModuleFilesMap(stats, publicPath) {
+  const { modules } = stats;
+  const chunkFilesMap = getChunkFilesMap(stats, publicPath);
 
   return modules.reduce(
     (map, module) => {
+      // eslint-disable-next-line no-param-reassign
       map[module.name] = flatten(
         module.chunks.map(chunkId => chunkFilesMap[chunkId]),
       );
@@ -53,7 +80,6 @@ function getModuleFilesMap(stats, publicPath) {
     {},
   );
 }
-/* eslint-enable no-param-reassign */
 
 export default function writeStats(stats) {
   const publicPath = this.options.output.publicPath;
@@ -62,8 +88,8 @@ export default function writeStats(stats) {
 
   const content = {
     modules,
-    js: mapValues(json.assetsByChunkName, value => `${publicPath}${value}`),
-    stylesheets: getChunkAssets("main", "css", json, publicPath),
+    js: getChunkAssetsMapWithExtension("js", json, publicPath),
+    stylesheets: getChunkAssetsMapWithExtension("css", json, publicPath),
   };
 
   fs.writeFileSync(STATS_FILE_PATH, JSON.stringify(content));

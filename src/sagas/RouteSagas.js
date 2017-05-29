@@ -107,7 +107,7 @@ function* watchLocationChange(routes, history) {
 
     if (route) {
       const { handler, params } = route;
-      const { name, saga, preload, component } = handler;
+      const { name, saga, component } = handler;
       routeHandler = saga;
       RouteComponent = component;
       routeArgs = {
