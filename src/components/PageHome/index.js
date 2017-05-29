@@ -15,4 +15,5 @@ export default Loadable({
   loader,
   LoadingComponent: () => <div />,
   serverSideRequirePath: !BROWSER ? path.join(__dirname, "./PageHome") : undefined,
+  webpackRequireWeakId: BROWSER ? () => require.resolveWeak("./PageHome") : undefined,
 });
