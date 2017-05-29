@@ -141,7 +141,6 @@ function* watchHistoryActions(history) {
   }
 }
 
-// eslint-disable-next-line import/prefer-default-export
 export function* watchRoutes(routes, history) {
   yield fork(watchLocationChange, routes, history);
   yield fork(watchHistoryActions, history);

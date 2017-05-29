@@ -1,6 +1,5 @@
 import qs from "qs";
 
-/* eslint-disable import/prefer-default-export */
 /**
  * Parse query string into JS Object
  * @param {String} str

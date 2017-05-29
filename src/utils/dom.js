@@ -2,7 +2,6 @@ import get from "lodash/get";
 
 import { BROWSER } from "../Config";
 
-/* eslint-disable import/prefer-default-export */
 /**
  * Check if `preload` link is supported
  * We will use a singleton flag to make sure the logic of checking is only done once

@@ -3,6 +3,7 @@ import { createLogger } from "redux-logger";
 import createSagaMiddleware from "redux-saga";
 import { enableBatching } from "redux-batched-actions";
 import { batchedSubscribe } from "redux-batched-subscribe";
+import { Iterable } from "immutable";
 
 import rootReducer from "../reducers";
 import { NODE_ENV, BROWSER } from "../Config";
@@ -15,7 +16,23 @@ middlewares.push(sagaMiddleware);
 // Add "redux-logger" on client side
 if (NODE_ENV === "development") {
   if (BROWSER) {
-    middlewares.push(createLogger());
+    middlewares.push(
+      createLogger({
+        // Filter out private actions
+        predicate(getState, action) {
+          return action.type.startsWith("_");
+        },
+        // Transform payload to JS Object if it is an Immutable DS
+        stateTransformer(state) {
+          if (Iterable.isIterable(state)) {
+            return state.toJS();
+          }
+          else {
+            return state;
+          }
+        }
+      }),
+    );
   }
 }
 

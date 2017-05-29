@@ -1,28 +1,17 @@
 import { put } from "redux-saga/effects";
-import keyMirror from "keymirror";
-import mapValues from "lodash/mapValues";
 
 import { changeComponent } from "../actions/RouteActions";
 import PageHome from "../components/PageHome";
 import PageProduct from "../components/PageProduct";
-
-// Route Names
-const RouteNames = mapValues(
-  keyMirror({
-    HOME: null,
-    PRODUCT: null,
-  }),
-  value => value.toLowerCase(),
-);
 
 // List of application routes
 const Routes = [
   {
     path: "/",
     handler: {
-      name: RouteNames.HOME,
+      name: "home",
       component: PageHome,
-      saga: function* homeRouteHandler({ RouteComponent }) {
+      * saga({ RouteComponent }) {
         yield RouteComponent.preload();
         yield put(changeComponent(RouteComponent));
       },
@@ -31,9 +20,9 @@ const Routes = [
   {
     path: "/p/:productId/",
     handler: {
-      name: RouteNames.PRODUCT,
+      name: "product",
       component: PageProduct,
-      saga: function* productRouteHandler({ RouteComponent }) {
+      * saga({ RouteComponent }) {
         yield RouteComponent.preload();
         yield put(changeComponent(RouteComponent));
       },

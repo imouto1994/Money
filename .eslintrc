@@ -16,6 +16,8 @@
     "no-underscore-dangle": 0,
     "prefer-arrow-callback": 0,
     "arrow-parens": [2, "as-needed", { "requireForBlockBody": false }],
+    "no-continue": 0,
+    "no-plusplus": 0,
 
     /* Import Rules */
     "import/no-extraneous-dependencies": [
@@ -27,6 +29,7 @@
     "import/newline-after-import": 0,
     "no-duplicate-imports": 0,
     "import/no-duplicates": 2,
+    "import/prefer-default-export": 0,
 
     /* React Plugins Rules */
     "react/sort-comp": [
