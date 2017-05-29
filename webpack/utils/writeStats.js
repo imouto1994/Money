@@ -28,6 +28,7 @@ function getChunkAssetsWithExtension(chunkName, extension = "js", stats, publicP
 
 /**
  * Get map from each chunk to its list of assets with specific extension
+ * This map will only contain those chunks with specified chunk name
  * @param {String} extension
  * @param {Object} stats
  * @param {String} publicPath
@@ -42,12 +43,12 @@ function getChunkAssetsMapWithExtension(extension = "js", stats, publicPath) {
 }
 
 /**
- * Get a map from each chunk to its list of files
+ * Get a map from each chunk to its list of assets
  * @param {Object} stats
  * @param {String} publicPath [description]
  * @return {Object}
  */
-function getChunkFilesMap(stats, publicPath) {
+function getChunkAssetsMap(stats, publicPath) {
   const { chunks } = stats;
   return chunks.reduce(
     (map, chunk) => {
@@ -60,14 +61,14 @@ function getChunkFilesMap(stats, publicPath) {
 }
 
 /**
- * Get a map from each module to its list of related chunk files
+ * Get a map from each module to its list of related chunk assets
  * @param {Object} stats
  * @param {String} publicPath
  * @return {Object}
  */
-function getModuleFilesMap(stats, publicPath) {
+function getModuleAssetsMap(stats, publicPath) {
   const { modules } = stats;
-  const chunkFilesMap = getChunkFilesMap(stats, publicPath);
+  const chunkFilesMap = getChunkAssetsMap(stats, publicPath);
 
   return modules.reduce(
     (map, module) => {
@@ -84,7 +85,7 @@ function getModuleFilesMap(stats, publicPath) {
 export default function writeStats(stats) {
   const publicPath = this.options.output.publicPath;
   const json = stats.toJson();
-  const modules = getModuleFilesMap(json, publicPath);
+  const modules = getModuleAssetsMap(json, publicPath);
 
   const content = {
     modules,
