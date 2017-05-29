@@ -38,7 +38,7 @@ function render(req, res, next) {
     .then(() => {
       const componentMarkUp = renderToString(<Root store={ store } />);
       const rootDir = path.resolve(__dirname, "../../../");
-      const asyncChunks = flushServerSideRequirePaths().map(p => `${p.replace(rootDir, ".")}.js`);
+      const asyncModules = flushServerSideRequirePaths().map(p => `${p.replace(rootDir, ".")}.js`);
       const helmet = Helmet.renderStatic();
       const html = renderToStaticMarkup(
         <HtmlDocument
@@ -46,7 +46,7 @@ function render(req, res, next) {
           state={ dehydrate(store.getState()) }
           markup={ componentMarkUp }
           webpackAssets={ webpackAssets }
-          asyncChunks={ asyncChunks }
+          asyncModules={ asyncModules }
         />,
       );
       const docType = "<!DOCTYPE html>";

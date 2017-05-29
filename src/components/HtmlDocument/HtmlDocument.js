@@ -8,7 +8,7 @@ class HtmlDocument extends PureComponent {
     helmet: PropTypes.object.isRequired,
     markup: PropTypes.string.isRequired,
     state: PropTypes.object.isRequired,
-    asyncChunks: PropTypes.array,
+    asyncModules: PropTypes.array,
     webpackAssets: PropTypes.object,
   };
 
@@ -50,14 +50,15 @@ class HtmlDocument extends PureComponent {
   }
 
   getApplicationScripts() {
-    const { webpackAssets, asyncChunks } = this.props;
+    const { webpackAssets, asyncModules } = this.props;
     const scripts = [
       { path: webpackAssets.js.manifest },
       { path: webpackAssets.js.vendor },
-      ...asyncChunks
-        .map(path => get(webpackAssets, ["modules", path]))
-        .filter(f => f != null)
-        .map(f => ({ path: f })),
+      ...asyncModules
+        .map(module => get(webpackAssets, ["modules", module]))
+        .filter(asset => asset != null)
+        .filter((asset, i, arr) => arr.indexOf(asset) === i)
+        .map(asset => ({ path: asset })),
       { path: webpackAssets.js.main },
     ];
 

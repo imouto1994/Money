@@ -68,13 +68,13 @@ function getChunkAssetsMap(stats, publicPath) {
  */
 function getModuleAssetsMap(stats, publicPath) {
   const { modules } = stats;
-  const chunkFilesMap = getChunkAssetsMap(stats, publicPath);
+  const chunkAssetsMap = getChunkAssetsMap(stats, publicPath);
 
   return modules.reduce(
     (map, module) => {
       // eslint-disable-next-line no-param-reassign
-      map[module.name] = flatten(
-        module.chunks.map(chunkId => chunkFilesMap[chunkId]),
+      map[module.name] = flatten(module.chunks.map(chunkId => chunkAssetsMap[chunkId])).map(
+        (asset, i, arr) => arr.indexOf(asset) === i,
       );
       return map;
     },
