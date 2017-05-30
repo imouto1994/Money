@@ -4,10 +4,11 @@
  * @return {Function}
  */
 export function createActionCreator(type) {
-  return function actionCreator(payload) {
+  return function actionCreator(payload, err) {
     return {
       type,
       payload,
+      err,
     };
   };
 }

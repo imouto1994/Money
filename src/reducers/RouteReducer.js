@@ -1,4 +1,4 @@
-import { Map, fromJS } from "immutable";
+import { Map } from "immutable";
 
 import {
   ROUTE_CHANGE_COMPONENT,
@@ -30,12 +30,15 @@ const initialState = new Map({
 export default function routeReducer(state = initialState, action) {
   const { type, payload } = action;
   switch (type) {
-    case ROUTE_CHANGE_COMPONENT:
+    case ROUTE_CHANGE_COMPONENT: {
       return state.set("component", payload);
-    case ROUTE_UPDATE_PATH:
+    }
+    case ROUTE_UPDATE_PATH: {
       return state.merge(payload);
-    default:
+    }
+    default: {
       return state;
+    }
   }
 }
 

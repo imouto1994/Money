@@ -30,13 +30,14 @@ function render(req, res, next) {
     delete require.cache[require.resolve("./webpack-stats.json")];
   }
 
+  // Intialize Redux
   const store = configureStore();
   const history = createMemoryHistory();
   store
     .runSaga(createRootSaga(history))
     .done
     .then(() => {
-      // Render component markup
+      // Render component mwarkup
       const componentMarkUp = renderToString(<Root store={ store } />);
       // Retrieve modules which need to be loaded asynchronously
       const rootDir = path.resolve(__dirname, "../../../");
@@ -56,7 +57,9 @@ function render(req, res, next) {
       const docType = "<!DOCTYPE html>";
       res.send(`${docType}${html}`);
     });
+  // Push the requested URL into history
   history.push(req.url);
+  // Dispatch special 'END' action to end all running sagas
   store.dispatch(END);
 }
 
