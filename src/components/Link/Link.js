@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 
 import { push } from "../../actions/RouteActions";
 
+// TODO: Improve 'Link' behavior
 class Link extends PureComponent {
   static propTypes = {
     href: PropTypes.string.isRequired,

@@ -1,4 +1,4 @@
-import fetchrHandler from "../middlewares/fetchrHanlder";
+import fetchrHandler from "../middlewares/fetchrHandler";
 import errorHandler from "../middlewares/errorHandler";
 
 /**

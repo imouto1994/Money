@@ -48,12 +48,3 @@ export function dehydrate(state) {
   // Delete property 'component' since it cannot be stringified into JSON format
   return state.delete("component").toJS();
 }
-
-/**
- * Rehydrate state for passing to Redux store on browser side
- * @param {Object} dehydratedState
- * @return {Immutable Map}
- */
-export function rehydrate(dehydratedState) {
-  return fromJS(dehydratedState);
-}

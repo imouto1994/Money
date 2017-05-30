@@ -9,10 +9,8 @@ if (!BROWSER) {
   path = require("path");
 }
 
-export const loader = () => import("./PageProduct");
-
 export default Loadable({
-  loader,
+  loader: () => import("./PageProduct"),
   LoadingComponent: () => <div />,
   serverSideRequirePath: !BROWSER ? path.join(__dirname, "./PageProduct") : undefined,
   webpackRequireWeakId: BROWSER ? () => require.resolveWeak("./PageProduct") : undefined,

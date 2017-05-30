@@ -1,8 +1,10 @@
-import { put } from "redux-saga/effects";
+import { delay } from "redux-saga";
+import { put, call } from "redux-saga/effects";
 
 import { changeComponent } from "../actions/RouteActions";
 import PageHome from "../components/PageHome";
 import PageProduct from "../components/PageProduct";
+import { executeMultiple } from "../utils/saga";
 
 // List of application routes
 const Routes = [
@@ -11,9 +13,14 @@ const Routes = [
     handler: {
       name: "home",
       component: PageHome,
-      * saga({ RouteComponent }) {
-        yield RouteComponent.preload();
-        yield put(changeComponent(RouteComponent));
+      saga({ RouteComponent }) {
+        return executeMultiple({
+          preload: RouteComponent.preload,
+          updateComponent: [
+            "preload",
+            put(changeComponent(RouteComponent)),
+          ],
+        });
       },
     },
   },
@@ -22,9 +29,16 @@ const Routes = [
     handler: {
       name: "product",
       component: PageProduct,
-      * saga({ RouteComponent }) {
-        yield RouteComponent.preload();
-        yield put(changeComponent(RouteComponent));
+      saga({ RouteComponent }) {
+        return executeMultiple({
+          preload: RouteComponent.preload,
+          delay: call(delay, 3000),
+          updateComponent: [
+            "preload",
+            "delay",
+            put(changeComponent(RouteComponent)),
+          ],
+        });
       },
     },
   },

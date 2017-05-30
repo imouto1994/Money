@@ -20,7 +20,7 @@ if (NODE_ENV === "development") {
       createLogger({
         // Filter out private actions
         predicate(getState, action) {
-          return action.type.startsWith("_");
+          return !action.type.startsWith("_");
         },
         // Transform payload to JS Object if it is an Immutable DS
         stateTransformer(state) {
@@ -30,7 +30,7 @@ if (NODE_ENV === "development") {
           else {
             return state;
           }
-        }
+        },
       }),
     );
   }

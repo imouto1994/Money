@@ -1,4 +1,4 @@
-import { fork, join } from "redux-saga/effects";
+import { fork, join, call } from "redux-saga/effects";
 import get from "lodash/get";
 
 import { identity } from "./function";
@@ -28,40 +28,90 @@ export function isBlockEffect(effect) {
     .length > 0;
 }
 
-export function* executeMultiple(sagasMap) {
-  const tasksMap = {};
-  while (Object.keys(tasksMap) !== Object.keys(sagasMap)) {
-    // eslint-disable-next-line no-restricted-syntax
-    for (const key in sagasMap) {
-      // eslint-disable-next-line no-prototype-builtins
-      if (sagasMap.hasOwnProperty(key)) {
-        const value = sagasMap[key];
-        if (value instanceof Array) {
-          const dependencies = value.slice(0, value.length - 1);
-          let isDependenciesUnresolved = false;
-          for (let i = 0, length = dependencies.length; i < length; i++) {
-            if (tasksMap[dependencies[i]] == null) {
-              isDependenciesUnresolved = true;
-              break;
-            }
-          }
-          if (isDependenciesUnresolved) {
+/**
+ * [getEffect description]
+ * @param {[type]} value [description]
+ * @param {Boolean} isFork [description]
+ * @return {[type]} [description]
+ */
+function getEffect(value, isFork = false) {
+  const effect = isFork ? fork : call;
+  if (value.constructor.name === "GeneratorFunction") {
+    return effect(value);
+  }
+  else if (typeof value === "function") {
+    return effect(
+      function* () {
+        yield call(value);
+      },
+    );
+  }
+  // Saga Effect Descriptors or Promise
+  else if (typeof value === "object") {
+    return effect(
+      function* () {
+        yield value;
+      },
+    );
+  }
+  else {
+    throw new Error("Invalid value to create fork effect");
+  }
+}
+
+const MAX_ITERATION_COUNT = 10;
+/**
+ * Execute a series of sagas with dependencies on each other
+ * @param {[type]} sagasMap [description]
+ * @yield {[type]} [description]
+ */
+export function executeMultiple(sagasMap) {
+  return function* () {
+    const tasksMap = {};
+    // Ensure that the upcoming loop will not go on forever
+    let iteration = 0;
+    /* eslint-disable no-restricted-syntax, no-prototype-builtins */
+    while (iteration++ < MAX_ITERATION_COUNT && Object.keys(tasksMap) !== Object.keys(sagasMap)) {
+      for (const key in sagasMap) {
+        if (sagasMap.hasOwnProperty(key)) {
+          if (tasksMap[key] != null) {
             continue;
           }
+          const value = sagasMap[key];
+          // Sagas with dependencies
+          if (value instanceof Array) {
+            const dependencies = value.slice(0, value.length - 1);
+            let isDependenciesUnresolved = false;
+            for (let i = 0, length = dependencies.length; i < length; i++) {
+              if (tasksMap[dependencies[i]] == null) {
+                isDependenciesUnresolved = true;
+                break;
+              }
+            }
+            // Skip if all the dependencies have not been executed
+            if (isDependenciesUnresolved) {
+              continue;
+            }
+            else {
+              const saga = value[value.length - 1];
+              const task = yield fork(function* () {
+                yield join(
+                  ...dependencies
+                    .map(v => tasksMap[v])
+                    .filter(t => t != null && t !== true),
+                );
+                yield getEffect(saga);
+              });
+              tasksMap[key] = task;
+            }
+          }
+          // Sagas without dependencies
           else {
-            const saga = value[value.length - 1];
-            const task = yield fork(function* sagaWithDependencies() {
-              yield join(dependencies.map(v => tasksMap[v]));
-              yield fork(saga);
-            });
+            const task = yield getEffect(value, true);
             tasksMap[key] = task;
           }
         }
-        else if (typeof value === "function") {
-          const task = yield fork(value);
-          tasksMap[key] = task;
-        }
       }
     }
-  }
+  };
 }

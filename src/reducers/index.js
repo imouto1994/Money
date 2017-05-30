@@ -1,6 +1,8 @@
 import { combineReducers } from "redux";
+import mapValues from "lodash/mapValues";
 
-import RouteReducer, { dehydrate as routeDehydrate, rehydrate as routeRehydrate } from "./RouteReducer";
+import RouteReducer, { dehydrate as routeDehydrate } from "./RouteReducer";
+import { dehydrate as defaultDehydrate, rehydrate as defaultRehydrate } from "../utils/reducer";
 
 const reducers = combineReducers({
   Route: RouteReducer,
@@ -8,16 +10,23 @@ const reducers = combineReducers({
 
 export default reducers;
 
-/* eslint-disable no-param-reassign */
 /**
  * Dehydrate Redux Store to pass to client from server side
  * @param {Object} state
  * @return {Object}
  */
 export function dehydrate(state) {
-  const res = { ...state };
-  res.Route = routeDehydrate(res.Route);
-  return res;
+  return mapValues(
+    state,
+    (value, key) => {
+      if (key === "Route") {
+        return routeDehydrate(value);
+      }
+      else {
+        return defaultDehydrate(value);
+      }
+    },
+  );
 }
 
 /**
@@ -26,8 +35,8 @@ export function dehydrate(state) {
  * @return {Object}
  */
 export function rehydrate(dehydratedState) {
-  const res = { ...dehydratedState };
-  res.Route = routeRehydrate(res.Route);
-  return res;
+  return mapValues(
+    dehydratedState,
+    value => defaultRehydrate(value),
+  );
 }
-/* eslint-enable no-param-reassign */

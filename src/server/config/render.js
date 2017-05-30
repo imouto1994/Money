@@ -36,10 +36,14 @@ function render(req, res, next) {
     .runSaga(createRootSaga(history))
     .done
     .then(() => {
+      // Render component markup
       const componentMarkUp = renderToString(<Root store={ store } />);
+      // Retrieve modules which need to be loaded asynchronously
       const rootDir = path.resolve(__dirname, "../../../");
       const asyncModules = flushServerSideRequirePaths().map(p => `${p.replace(rootDir, ".")}.js`);
+      // Retrieve required title, headers, links & scripts
       const helmet = Helmet.renderStatic();
+      // Render HTML & send back as response to client
       const html = renderToStaticMarkup(
         <HtmlDocument
           helmet={ helmet }
