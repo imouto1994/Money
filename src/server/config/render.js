@@ -48,12 +48,11 @@ function render(req, res, next) {
       const err = errorSelector(store.getState());
       if (err) {
         const { status = 0, statusCode = 0, redirectPath } = err;
-        const isForbidden = status === STATUS_CODE_FORBIDDEN || statusCode === STATUS_CODE_FORBIDDEN;
-        const isUnauthorized = status === STATUS_CODE_UNAUTHORIZED || statusCode === STATUS_CODE_UNAUTHORIZED;
-        const isRedirect = status === STATUS_CODE_TEMP_REDIRECT
-          || status === STATUS_CODE_PERMANENT_REDIRECT
-          || statusCode === STATUS_CODE_TEMP_REDIRECT
-          || statusCode === STATUS_CODE_PERMANENT_REDIRECT;
+        const code = status || statusCode;
+        const isForbidden = code === STATUS_CODE_FORBIDDEN;
+        const isUnauthorized = code === STATUS_CODE_UNAUTHORIZED;
+        const isRedirect = code === STATUS_CODE_TEMP_REDIRECT || code === STATUS_CODE_PERMANENT_REDIRECT;
+        const isServerError = code > 500;
 
         // TODO: Correct way to handle 404
         if (isForbidden) {
@@ -71,7 +70,7 @@ function render(req, res, next) {
         else if (isRedirect && redirectPath) {
           return res.redirect(status || statusCode, redirectPath);
         }
-        else {
+        else if (isServerError) {
           // Unknown error, pass it down to the next error middleware
           return next(err);
         }

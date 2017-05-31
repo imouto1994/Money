@@ -13,18 +13,13 @@ import {
 export function* watchErrors() {
   // eslint-disable-next-line no-constant-condition
   while (true) {
-    const { err, payload } = yield take(action => action.err != null);
-    const { isSilent } = payload;
+    const { err } = yield take(action => action.err != null);
     const { status = 0, statusCode = 0, redirectPath } = err;
-    if (isSilent) {
-      continue;
-    }
-    const isForbidden = status === STATUS_CODE_FORBIDDEN || statusCode === STATUS_CODE_FORBIDDEN;
-    const isUnauthorized = status === STATUS_CODE_UNAUTHORIZED || statusCode === STATUS_CODE_UNAUTHORIZED;
-    const isRedirect = status === STATUS_CODE_TEMP_REDIRECT
-      || status === STATUS_CODE_PERMANENT_REDIRECT
-      || statusCode === STATUS_CODE_TEMP_REDIRECT
-      || statusCode === STATUS_CODE_PERMANENT_REDIRECT;
+    const code = status || statusCode;
+    const isForbidden = code === STATUS_CODE_FORBIDDEN;
+    const isUnauthorized = code === STATUS_CODE_UNAUTHORIZED;
+    const isRedirect = code === STATUS_CODE_PERMANENT_REDIRECT || code === STATUS_CODE_TEMP_REDIRECT;
+    const isServerError = code > 500;
     if (isForbidden) {
       // Redirect to Login page with the redirected URL
       const url = yield select(routeUrlSelector);
@@ -40,9 +35,8 @@ export function* watchErrors() {
     else if (isRedirect && redirectPath) {
       yield put(push(redirectPath));
     }
-    else {
-      const code = status || statusCode;
-      yield fork(alert, `Unknown error ${code} T_T`);
+    else if (isServerError) {
+      yield fork(alert, `Internal Server Error ${code} T_T`);
     }
   }
 }
