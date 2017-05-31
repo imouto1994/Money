@@ -5,6 +5,7 @@ import get from "lodash/get";
 
 class HtmlDocument extends PureComponent {
   static propTypes = {
+    lang: PropTypes.string.isRequired,
     helmet: PropTypes.object.isRequired,
     markup: PropTypes.string.isRequired,
     state: PropTypes.object.isRequired,
@@ -19,13 +20,15 @@ class HtmlDocument extends PureComponent {
 
   render() {
     const {
+      lang,
       markup,
       state,
       helmet,
+      webpackAssets,
     } = this.props;
 
     return (
-      <html lang="en">
+      <html lang={ lang } data-lang-file={ get(webpackAssets, ["translations", lang]) } >
         <head>
           { helmet.title.toComponent() }
           { helmet.meta.toComponent() }
@@ -50,14 +53,14 @@ class HtmlDocument extends PureComponent {
   getApplicationScripts() {
     const { webpackAssets, asyncModules } = this.props;
     const scripts = [
-      { path: webpackAssets.scripts.manifest },
-      { path: webpackAssets.scripts.vendor },
+      ...webpackAssets.scripts.manifest.map(path => ({ path })),
+      ...webpackAssets.scripts.vendor.map(path => ({ path })),
       ...asyncModules
         .map(module => get(webpackAssets, ["modules", module]))
         .filter(asset => asset != null)
         .filter((asset, i, arr) => arr.indexOf(asset) === i)
         .map(asset => ({ path: asset })),
-      { path: webpackAssets.scripts.main },
+      ...webpackAssets.scripts.main.map(path => ({ path })),
     ];
 
     return scripts;

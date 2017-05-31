@@ -46,6 +46,8 @@ function render(req, res, next) {
     .done
     .then(() => {
       const err = errorSelector(store.getState());
+
+      // Handle error
       if (err) {
         const { status = 0, statusCode = 0, redirectPath } = err;
         const code = status || statusCode;
@@ -75,16 +77,28 @@ function render(req, res, next) {
           return next(err);
         }
       }
+
+      // Fetch translation text
+      const { locale } = req;
+      // eslint-disable-next-line global-require, import/no-dynamic-require
+      const messages = require(`../../intl/json/${locale}.json`).messages;
+
       // Render component mwarkup
-      const componentMarkUp = renderToString(<Root store={ store } />);
+      const componentMarkUp = renderToString(
+        <Root store={ store } locale={ locale } messages={ messages } />,
+      );
+
       // Retrieve modules which need to be loaded asynchronously
       const rootDir = path.resolve(__dirname, "../../../");
       const asyncModules = flushServerSideRequirePaths().map(p => `${p.replace(rootDir, ".")}.js`);
+
       // Retrieve required title, headers, links & scripts
       const helmet = Helmet.renderStatic();
+
       // Render HTML & send back as response to client
       const html = renderToStaticMarkup(
         <HtmlDocument
+          lang={ locale }
           helmet={ helmet }
           state={ dehydrate(store.getState()) }
           markup={ componentMarkUp }
@@ -95,8 +109,10 @@ function render(req, res, next) {
       const docType = "<!DOCTYPE html>";
       return res.send(`${docType}${html}`);
     });
+
   // Push the requested URL into history
   history.push(req.url);
+
   // Dispatch special 'END' action to end all running sagas
   store.dispatch(END);
 }

@@ -3,9 +3,11 @@ import mapValues from "lodash/mapValues";
 
 import RouteReducer, { dehydrate as routeDehydrate } from "./RouteReducer";
 import ErrorReducer from "./ErrorReducer";
+import ApplicationReducer from "./ApplicationReducer";
 import { dehydrate as defaultDehydrate, rehydrate as defaultRehydrate } from "../utils/reducer";
 
 const reducers = combineReducers({
+  Application: ApplicationReducer,
   Route: RouteReducer,
   Error: ErrorReducer,
 });

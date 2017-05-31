@@ -1,6 +1,8 @@
 const keyMirror = require("keymirror");
 
 module.exports = keyMirror({
+  // Application Actions
+
   // Route Actions
   ROUTE_CHANGE_COMPONENT: null,
   ROUTE_UPDATE_PATH: null,

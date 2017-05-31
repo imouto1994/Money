@@ -4,8 +4,9 @@ import "./polyfill";
 /* eslint-disable import/first */
 import React from "react";
 import ReactDOM from "react-dom";
-import { AppContainer } from "react-hot-loader";
 import createBrowserHistory from "history/createBrowserHistory";
+import request from "superagent";
+import get from "lodash/get";
 /* eslint-enable import/first */
 
 import Root from "../components/Root";
@@ -14,6 +15,7 @@ import configureStore from "../redux";
 import createRootSaga from "../sagas";
 import { changeComponent } from "../actions/RouteActions";
 import { getRouteComponent } from "../routes";
+import { loadIntlPolyfill, loadLocaleData } from "../utils/intl";
 import { NODE_ENV } from "../Config";
 
 // Read data from DOM
@@ -24,33 +26,38 @@ const localeFile = document.documentElement.getAttribute("data-lang-file");
 
 /**
  * [render description]
- * @param {[type]} store [description]
  * @param {[type]} node [description]
+ * @param {[type]} store [description]
+ * @param {[type]} messages [description]
  * @return {[type]} [description]
  */
-function render(store, node) {
+function render(node, store, messages) {
   ReactDOM.render(
-    <AppContainer>
-      <Root store={ store } />
-    </AppContainer>,
-    node
+    <Root store={ store } locale={ locale } messages={ messages } />,
+    node,
   );
 }
 
-// Initialize Redux
-const store = configureStore(rehydrate(window.__data));
-const history = createBrowserHistory();
-store.runSaga(createRootSaga(history));
+loadIntlPolyfill(locale)
+  .then(() => loadLocaleData(locale))
+  .then(() => request.get(localeFile))
+  .then(res => get(res, ["body", "messages"]))
+  .then(messages => {
+    // Initialize Redux
+    const store = configureStore(rehydrate(dehydratedState));
+    const history = createBrowserHistory();
+    store.runSaga(createRootSaga(history));
 
-// Fetch the necessary chunk for the route
-const RouteComponent = getRouteComponent(store.getState().Route.get("name"));
-store.dispatch(changeComponent(RouteComponent));
-render(store, mountNode);
+    // Fetch the necessary chunk for the route
+    const RouteComponent = getRouteComponent(store.getState().Route.get("name"));
+    store.dispatch(changeComponent(RouteComponent));
+    render(mountNode, store, messages);
 
-// Enable Webpack hot module replacement for React component
-// TODO: Hot reload does not seem to work with code splitting
-if (NODE_ENV === "development") {
-  if (module.hot) {
-    module.hot.accept("./index", () => render(store, mountNode));
-  }
-}
+    // Enable Webpack hot module replacement for React component
+    // TODO: Hot reload does not seem to work with code splitting
+    if (NODE_ENV === "development") {
+      if (module.hot) {
+        module.hot.accept("./index", () => render(mountNode, store, messages));
+      }
+    }
+  });
