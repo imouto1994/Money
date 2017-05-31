@@ -1,7 +1,7 @@
 /**
  * Middleware to handle `fetchr` error
  */
-export default function (err, req, res, next) {
+export function fetchrHandler(err, req, res, next) {
   if (err != null) {
     if (err.code === "EBADCSRFTOKEN") {
       // Handle CSRF token errors here

@@ -1,14 +1,10 @@
-import debug from "debug";
-
-import DebugEnvs from "../../constants/DebugEnvs";
-
-const log = debug(DebugEnvs.SERVER);
+import { log } from "../../utils/log";
 
 /* eslint-disable no-unused-vars */
 /**
  * Middleware to handle generic error
  */
-export default function (err, req, res, next) {
+export function errorHandler(err, req, res, next) {
   if (err != null) {
     log(`Error on request ${req.method} ${req.url}`);
     log(err);

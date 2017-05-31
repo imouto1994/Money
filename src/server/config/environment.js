@@ -7,10 +7,12 @@ import favicon from "serve-favicon";
 import compression from "compression";
 import cors from "cors";
 import csurf from "csurf";
+import locale from "locale";
 
-import blockBot from "../middlewares/blockBot";
-import healthCheck from "../middlewares/healthCheck";
-import { NODE_ENV } from "../../Config";
+import { blockBot } from "../middlewares/block";
+import { healthCheck } from "../middlewares/health";
+import { setLocale } from "../middlewares/locale";
+import { NODE_ENV, LOCALES } from "../../Config";
 
 /**
  * Setup environment for application server
@@ -85,8 +87,14 @@ export default function (app) {
   app.get("/health/check", healthCheck);
 
   /**
-   * TODO: Locale middlewares
+   * Locale middlewares
    */
+  // Set the default locale to empty string
+  locale.Locale.default = "";
+  // Assign locale to `req.locale` based on the browser settings
+  app.use(locale(LOCALES));
+  // Override `req.locale` from cookie or query string. This will also act as fallback if locale is not detected.
+  app.use(setLocale);
 
   /**
    * CSURF Middleware

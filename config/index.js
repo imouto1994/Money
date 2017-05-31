@@ -1,39 +1,52 @@
-const pick = require("lodash/pick");
+import pick from "lodash/pick";
+
+import { LOCALES_MAP, LOCALES } from "./locales";
 
 /* Environment Variables */
 const {
   BROWSER,
 } = process.env;
 
-const CommonConfig = [
-  "NODE_ENV",
-  "BROWSER",
-];
-const ClientConfig = [];
-const ServerConfig = [
-  "SERVER_HOST",
-  "SERVER_PORT",
-];
+const CommonConfig = {
+  LOCALES,
+  LOCALES_MAP,
+  ...pick(
+    process.env,
+    [
+      "NODE_ENV",
+      "BROWSER",
+    ],
+  ),
+};
+const ClientConfig = {
+  ...pick(
+    process.env,
+    [],
+  ),
+};
+const ServerConfig = {
+  ...pick(
+    process.env,
+    [
+      "SERVER_HOST",
+      "SERVER_PORT",
+    ],
+  ),
+};
 
 function createConfig(isBrowser) {
   let config;
   if (isBrowser) {
-    config = pick(
-      process.env,
-      [
-        ...CommonConfig,
-        ...ClientConfig,
-      ],
-    );
+    config = {
+      ...CommonConfig,
+      ...ClientConfig,
+    };
   }
   else {
-    config = pick(
-      process.env,
-      [
-        ...CommonConfig,
-        ...ServerConfig,
-      ],
-    );
+    config = {
+      ...CommonConfig,
+      ...ServerConfig,
+    };
   }
 
   return {

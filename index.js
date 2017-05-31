@@ -1,13 +1,9 @@
-/* eslint-disable global-require */
-if (process.env.NODE_ENV === "development") {
-  // Register babel to have ES6 support on the server
-  require("babel-register")(require("./config/babel").server);
+// Register babel to have ES6 support on the server
+require("babel-register")(require("./config/babel").server);
 
-  // Hook CSS Modules for NodeJS 'require'
-  const cssModulesRequireHook = require("css-modules-require-hook");
-  cssModulesRequireHook({ generateScopedName: "[name]__[local]___[hash:base64:5]" });
-}
-/* eslint-enable global-require */
+// Hook CSS Modules for NodeJS 'require'
+const cssModulesRequireHook = require("css-modules-require-hook");
+cssModulesRequireHook({ generateScopedName: "[name]__[local]___[hash:base64:5]" });
 
 // Polyfill Promise on server-side using "bluebird"
 global.Promise = require("bluebird");

@@ -19,6 +19,7 @@
     "no-continue": 0,
     "no-plusplus": 0,
     "func-names": 0,
+    "no-confusing-arrow": 0,
 
     /* Import Rules */
     "import/no-extraneous-dependencies": [

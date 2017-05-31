@@ -1,12 +1,12 @@
 import { connect } from "react-redux";
 
 import Application from "./Application";
-import { getRouteName, getRouteComponent } from "../../selectors/RouteSelectors";
+import { routeNameSelector, routeComponentSelector } from "../../selectors/RouteSelectors";
 
 function selectFromStore(store) {
   return {
-    routeComponent: getRouteComponent(store),
-    routeName: getRouteName(store),
+    routeComponent: routeComponentSelector(store),
+    routeName: routeNameSelector(store),
   };
 }
 

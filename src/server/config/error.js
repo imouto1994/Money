@@ -1,5 +1,5 @@
-import fetchrHandler from "../middlewares/fetchrHandler";
-import errorHandler from "../middlewares/errorHandler";
+import { fetchrHandler } from "../middlewares/fetchr";
+import { errorHandler } from "../middlewares/error";
 
 /**
  * Setup error handlers for server application

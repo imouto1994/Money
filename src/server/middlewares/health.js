@@ -1,6 +1,6 @@
 /**
  * Middleware to handle health check request
  */
-export default function (req, res) {
+export function healthCheck(req, res) {
   res.send("Healthy Life!");
 }

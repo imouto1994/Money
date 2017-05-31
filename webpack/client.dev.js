@@ -40,6 +40,9 @@ module.exports = {
       "reselect",
       "redux-saga",
     ],
+    tx: [
+      "./src/intl/index.js",
+    ],
   },
   // Output for bundle
   output: {

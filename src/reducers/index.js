@@ -2,10 +2,12 @@ import { combineReducers } from "redux";
 import mapValues from "lodash/mapValues";
 
 import RouteReducer, { dehydrate as routeDehydrate } from "./RouteReducer";
+import ErrorReducer from "./ErrorReducer";
 import { dehydrate as defaultDehydrate, rehydrate as defaultRehydrate } from "../utils/reducer";
 
 const reducers = combineReducers({
   Route: RouteReducer,
+  Error: ErrorReducer,
 });
 
 export default reducers;

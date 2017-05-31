@@ -8,6 +8,7 @@ import get from "lodash/get";
 import { updatePath } from "../actions/RouteActions";
 import { parseQueryString } from "../utils/route";
 import { isPutEffectWithAction, isBlockEffect } from "../utils/saga";
+import { log } from "../utils/log";
 import {
   ROUTE_CHANGE_COMPONENT,
   ROUTE_HISTORY_PUSH,
@@ -103,7 +104,7 @@ function* watchLocationChange(routes, history) {
       let routeHandler;
       let RouteComponent;
       const location = nextLocation != null ? nextLocation : yield take(channel, "");
-      const pathName = location.pathname;
+      const { pathname: pathName, search: queryString } = location;
       const route = get(router.recognize(pathName), 0);
 
       if (route) {
@@ -114,8 +115,9 @@ function* watchLocationChange(routes, history) {
         routeArgs = {
           name,
           path: pathName,
+          url: `${pathName}${queryString}`,
           params,
-          query: parseQueryString(location.search),
+          query: parseQueryString(queryString),
         };
 
         yield put(updatePath(routeArgs));
@@ -135,7 +137,7 @@ function* watchLocationChange(routes, history) {
   catch (error) {
     // TODO: Add proper route handling
     // eslint-disable-next-line no-console
-    console.log("Generic error handler for route handling");
+    log("Generic error handler for route handling");
   }
 }
 

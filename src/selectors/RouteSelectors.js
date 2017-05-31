@@ -1,7 +1,5 @@
-export function getRouteName(store) {
-  return store.Route.get("name");
-}
+const routeNameSelector = store => store.Route.get("name");
+const routeComponentSelector = store => store.Route.get("component");
+const routeUrlSelector = store => store.Route.get("url");
 
-export function getRouteComponent(store) {
-  return store.Route.get("component");
-}
+export { routeNameSelector, routeComponentSelector, routeUrlSelector };

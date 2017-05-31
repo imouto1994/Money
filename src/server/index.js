@@ -1,19 +1,19 @@
 import express from "express";
 import Promise from "bluebird";
-import debug from "debug";
 import ip from "ip";
 
 import configureEnvironment from "./config/environment";
 import configureRoutes from "./config/routes";
 import configureRender from "./config/render";
-import DebugEnvs from "../constants/DebugEnvs";
+import { log } from "../utils/log";
+import { polyfillServerIntl } from "../utils/intl";
 import { NODE_ENV, SERVER_PORT, ETHER_INTERFACE } from "../Config";
 
-const log = debug(DebugEnvs.SERVER);
 const app = express();
 
 export default Promise
   .resolve()
+  .then(() => polyfillServerIntl())
   .then(() => {
     log(`Node Environment: ${NODE_ENV}`);
     log("Setting up environment...");
