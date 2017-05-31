@@ -1,5 +1,5 @@
-import keyMirror from "keymirror";
-import mapValues from "lodash/mapValues";
+const keyMirror = require("keymirror");
+const mapValues = require("lodash/mapValues");
 
 module.exports = mapValues(
   keyMirror({

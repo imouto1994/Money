@@ -44,6 +44,7 @@ function getChunkAssetsMapWithExtension(extension = "js", stats, publicPath) {
 
 /**
  * Get a map from each chunk to its list of assets
+ * where key is chunk ID
  * @param {Object} stats
  * @param {String} publicPath [description]
  * @return {Object}
@@ -82,15 +83,33 @@ function getModuleAssetsMap(stats, publicPath) {
   );
 }
 
-export default function writeStats(stats) {
+function getTranslationAssetsMap(stats, publicPath) {
+  const { assets } = stats;
+  return assets.reduce(
+    (map, asset) => {
+      const { name: assetName } = asset;
+      if (assetName.indexOf(".json") > -1) {
+        const assetNameWithoutExtension = assetName.split(".")[0];
+        const locale = assetNameWithoutExtension.split("_")[0];
+        // eslint-disable-next-line no-param-reassign
+        map[locale] = `${publicPath}${assetName}`;
+      }
+      return map;
+    },
+    {},
+  );
+}
+
+export default function writeStats(statsData) {
   const publicPath = this.options.output.publicPath;
-  const json = stats.toJson();
-  const modules = getModuleAssetsMap(json, publicPath);
+  const stats = statsData.toJson();
+  const modules = getModuleAssetsMap(stats, publicPath);
 
   const content = {
     modules,
-    js: getChunkAssetsMapWithExtension("js", json, publicPath),
-    stylesheets: getChunkAssetsMapWithExtension("css", json, publicPath),
+    scripts: getChunkAssetsMapWithExtension("js", stats, publicPath),
+    stylesheets: getChunkAssetsMapWithExtension("css", stats, publicPath),
+    translations: getTranslationAssetsMap(stats, publicPath),
   };
 
   fs.writeFileSync(STATS_FILE_PATH, JSON.stringify(content));

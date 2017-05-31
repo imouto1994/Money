@@ -38,8 +38,8 @@ module.exports = {
   },
   output: {
     path: assetsPath,
-    filename: "[name]-[hash].js",
-    chunkFilename: "[name]-[hash].js",
+    filename: "[name]_[hash].js",
+    chunkFilename: "[name]_[hash].js",
     publicPath,
   },
   module: {
@@ -50,7 +50,7 @@ module.exports = {
           {
             loader: "file-loader",
             options: {
-              name: "[name]-[hash].[ext]",
+              name: "[name]_[hash].[ext]",
             },
           },
         ],
@@ -118,7 +118,7 @@ module.exports = {
     new webpack.NormalModuleReplacementPlugin(/debug/, `${process.cwd()}/webpack/utils/noop.js`),
 
     // Bundle CSS file from the "extract-text-plugin" loader
-    new ExtractTextPlugin("[name]-[hash].css"),
+    new ExtractTextPlugin("[name]_[hash].css"),
 
     // Common Chunk Plugin
     new webpack.optimize.CommonsChunkPlugin({

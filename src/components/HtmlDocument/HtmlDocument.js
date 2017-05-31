@@ -50,14 +50,14 @@ class HtmlDocument extends PureComponent {
   getApplicationScripts() {
     const { webpackAssets, asyncModules } = this.props;
     const scripts = [
-      { path: webpackAssets.js.manifest },
-      { path: webpackAssets.js.vendor },
+      { path: webpackAssets.scripts.manifest },
+      { path: webpackAssets.scripts.vendor },
       ...asyncModules
         .map(module => get(webpackAssets, ["modules", module]))
         .filter(asset => asset != null)
         .filter((asset, i, arr) => arr.indexOf(asset) === i)
         .map(asset => ({ path: asset })),
-      { path: webpackAssets.js.main },
+      { path: webpackAssets.scripts.main },
     ];
 
     return scripts;
