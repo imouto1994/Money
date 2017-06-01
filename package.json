@@ -25,6 +25,7 @@
     "csurf": "1.9.0",
     "es6-promise": "4.1.0",
     "express": "4.15.3",
+    "fetchr": "^0.5.37",
     "helmet": "3.6.0",
     "history": "4.6.1",
     "immutable": "3.8.1",

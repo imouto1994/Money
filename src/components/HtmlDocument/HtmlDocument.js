@@ -5,6 +5,7 @@ import get from "lodash/get";
 
 class HtmlDocument extends PureComponent {
   static propTypes = {
+    csrf: PropTypes.string.isRequired,
     lang: PropTypes.string.isRequired,
     helmet: PropTypes.object.isRequired,
     markup: PropTypes.string.isRequired,
@@ -20,6 +21,7 @@ class HtmlDocument extends PureComponent {
 
   render() {
     const {
+      csrf,
       lang,
       markup,
       state,
@@ -38,6 +40,7 @@ class HtmlDocument extends PureComponent {
           { /* eslint-disable react/no-danger, max-len */ }
           <div id="root" dangerouslySetInnerHTML={ { __html: markup } } />
           <script dangerouslySetInnerHTML={ { __html: `window.__data=${serialize(state, { isJSON: true })};` } } />
+          <script dangerouslySetInnerHTML={ { __html: `window._csrf =${csrf}` } } />
           { /* eslint-enable react/no-danger, max-len */ }
           { helmet.script.toComponent() }
           {

@@ -4,12 +4,14 @@ import mapValues from "lodash/mapValues";
 import RouteReducer, { dehydrate as routeDehydrate } from "./RouteReducer";
 import ErrorReducer from "./ErrorReducer";
 import ApplicationReducer from "./ApplicationReducer";
+import FetchrReducer from "./FetchrReducer";
 import { dehydrate as defaultDehydrate, rehydrate as defaultRehydrate } from "../utils/reducer";
 
 const reducers = combineReducers({
   Application: ApplicationReducer,
   Route: RouteReducer,
   Error: ErrorReducer,
+  Fetchr: FetchrReducer,
 });
 
 export default reducers;
@@ -25,6 +27,11 @@ export function dehydrate(state) {
     (value, key) => {
       if (key === "Route") {
         return routeDehydrate(value);
+      }
+      else if (key === "Fetchr") {
+        // 'Fetchr' module does not need to be rehydrated
+        // since we will create a new client instance over there
+        return undefined;
       }
       else {
         return defaultDehydrate(value);

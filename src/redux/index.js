@@ -39,13 +39,14 @@ if (NODE_ENV === "development") {
 /**
  * Initialize Redux
  * @param {Object} initialState - initial state for the store
+ * @param {Fetchr Instance} fetchr - fetchr instance to be used throughout the session
  * This is necessary for the store to rehydrate on client side
  */
-export default function redux(initialState) {
+export default function redux(initialState, fetchr) {
   const store = createStore(
     // Batch actions
     enableBatching(rootReducer),
-    initialState,
+    { ...initialState, Fetchr: new Map({ instance: fetchr }) },
     compose(
       applyMiddleware(...middlewares),
       // Batch subscribe

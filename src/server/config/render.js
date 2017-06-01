@@ -6,6 +6,7 @@ import { END } from "redux-saga";
 import path from "path";
 import { flushServerSideRequirePaths } from "react-loadable";
 import qs from "qs";
+import Fetchr from "fetchr";
 
 import Root from "../../components/Root";
 import HtmlDocument from "../../components/HtmlDocument";
@@ -38,8 +39,18 @@ function render(req, res, next) {
     delete require.cache[require.resolve("./webpack-stats.json")];
   }
 
+  // Initialize Fetchr Server Instance
+  const csrfToken = req.csrfToken();
+  const fetchr = new Fetchr({
+    req,
+    xhrTimeout: 1000,
+    context: {
+      _csrf: csrfToken,
+    },
+  });
+
   // Intialize Redux
-  const store = configureStore();
+  const store = configureStore(undefined, fetchr);
   const history = createMemoryHistory();
   store
     .runSaga(createRootSaga(history))
@@ -70,7 +81,7 @@ function render(req, res, next) {
           return res.redirect(`/login?${query}`);
         }
         else if (isRedirect && redirectPath) {
-          return res.redirect(status || statusCode, redirectPath);
+          return res.redirect(code, redirectPath);
         }
         else if (isServerError) {
           // Unknown error, pass it down to the next error middleware
@@ -98,6 +109,7 @@ function render(req, res, next) {
       // Render HTML & send back as response to client
       const html = renderToStaticMarkup(
         <HtmlDocument
+          csrf={ csrfToken }
           lang={ locale }
           helmet={ helmet }
           state={ dehydrate(store.getState()) }

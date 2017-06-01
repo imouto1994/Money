@@ -1,6 +1,7 @@
 /**
  * Middleware to handle `fetchr` error
  */
+// TODO: Update this handler
 export function fetchrHandler(err, req, res, next) {
   if (err != null) {
     if (err.code === "EBADCSRFTOKEN") {

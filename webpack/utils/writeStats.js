@@ -67,16 +67,19 @@ function getChunkAssetsMap(stats, publicPath) {
  * @param {String} publicPath
  * @return {Object}
  */
-function getModuleAssetsMap(stats, publicPath) {
+function getModuleAssetsMap(stats, publicPath, pattern = "") {
   const { modules } = stats;
   const chunkAssetsMap = getChunkAssetsMap(stats, publicPath);
 
   return modules.reduce(
     (map, module) => {
-      // eslint-disable-next-line no-param-reassign
-      map[module.name] = flatten(module.chunks.map(chunkId => chunkAssetsMap[chunkId])).filter(
-        (asset, i, arr) => arr.indexOf(asset) === i,
-      );
+      if (module.name.indexOf(pattern) > -1) {
+        // eslint-disable-next-line no-param-reassign
+        map[module.name] = flatten(module.chunks.map(chunkId => chunkAssetsMap[chunkId])).filter(
+          (asset, i, arr) => arr.indexOf(asset) === i,
+        );
+      }
+
       return map;
     },
     {},
@@ -103,10 +106,9 @@ function getTranslationAssetsMap(stats, publicPath) {
 export default function writeStats(statsData) {
   const publicPath = this.options.output.publicPath;
   const stats = statsData.toJson();
-  const modules = getModuleAssetsMap(stats, publicPath);
 
   const content = {
-    modules,
+    modules: getModuleAssetsMap(stats, publicPath, "/components/"),
     scripts: getChunkAssetsMapWithExtension("js", stats, publicPath),
     stylesheets: getChunkAssetsMapWithExtension("css", stats, publicPath),
     translations: getTranslationAssetsMap(stats, publicPath),

@@ -7,6 +7,7 @@ import ReactDOM from "react-dom";
 import createBrowserHistory from "history/createBrowserHistory";
 import request from "superagent";
 import get from "lodash/get";
+import Fetchr from "fetchr";
 /* eslint-enable import/first */
 
 import Root from "../components/Root";
@@ -21,6 +22,7 @@ import { NODE_ENV } from "../Config";
 // Read data from DOM
 const mountNode = document.getElementById("root");
 const dehydratedState = window.__data;
+const csrfToken = window._csrf;
 const locale = document.documentElement.getAttribute("lang");
 const localeFile = document.documentElement.getAttribute("data-lang-file");
 
@@ -43,8 +45,17 @@ loadIntlPolyfill(locale)
   .then(() => request.get(localeFile))
   .then(res => get(res, ["body", "messages"]))
   .then(messages => {
+    // Initialize Fetchr Client Instance
+    const fetchr = new Fetchr({
+      xhrPath: "/ui/iso",
+      xhrTimeout: 1000,
+      context: {
+        _csrf: csrfToken,
+      },
+    });
+
     // Initialize Redux
-    const store = configureStore(rehydrate(dehydratedState));
+    const store = configureStore(rehydrate(dehydratedState), fetchr);
     const history = createBrowserHistory();
     store.runSaga(createRootSaga(history));
 
