@@ -30,6 +30,7 @@ const ServerConfig = {
     [
       "SERVER_HOST",
       "SERVER_PORT",
+      "BACKEND_API_URL",
     ],
   ),
 };
