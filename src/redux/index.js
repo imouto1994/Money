@@ -3,7 +3,7 @@ import { createLogger } from "redux-logger";
 import createSagaMiddleware from "redux-saga";
 import { enableBatching } from "redux-batched-actions";
 import { batchedSubscribe } from "redux-batched-subscribe";
-import { Iterable } from "immutable";
+import { Iterable, Map } from "immutable";
 
 import rootReducer from "../reducers";
 import { NODE_ENV, BROWSER } from "../Config";

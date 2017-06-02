@@ -39,8 +39,8 @@ class HtmlDocument extends PureComponent {
         <body>
           { /* eslint-disable react/no-danger, max-len */ }
           <div id="root" dangerouslySetInnerHTML={ { __html: markup } } />
-          <script dangerouslySetInnerHTML={ { __html: `window.__data=${serialize(state, { isJSON: true })};` } } />
-          <script dangerouslySetInnerHTML={ { __html: `window._csrf =${csrf}` } } />
+          <script dangerouslySetInnerHTML={ { __html: `window.__data = ${serialize(state, { isJSON: true })};` } } />
+          <script dangerouslySetInnerHTML={ { __html: `window._csrf = "${csrf}";` } } />
           { /* eslint-enable react/no-danger, max-len */ }
           { helmet.script.toComponent() }
           {
