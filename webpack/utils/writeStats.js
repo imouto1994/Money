@@ -13,7 +13,7 @@ const STATS_FILE_PATH = path.resolve(__dirname, "../../src/server/config/webpack
  * @param {String} publicPath
  * @return {Array}
  */
-function getChunkAssetsWithExtension(chunkName, extension = "js", stats, publicPath) {
+function getChunkAssetsWithExtension(chunkName, extension, stats, publicPath) {
   let chunkAssets = stats.assetsByChunkName[chunkName];
 
   // a chunk could be a string or an array, so make sure it is an array
@@ -22,7 +22,7 @@ function getChunkAssetsWithExtension(chunkName, extension = "js", stats, publicP
   }
 
   return chunkAssets
-    .filter(asset => path.extname(asset) === `.${extension}`) // filter by extension
+    .filter(asset => asset.match(extension) != null) // filter by extension
     .map(asset => `${publicPath}${asset}`); // add public path to it
 }
 
@@ -34,7 +34,7 @@ function getChunkAssetsWithExtension(chunkName, extension = "js", stats, publicP
  * @param {String} publicPath
  * @return {Object}
  */
-function getChunkAssetsMapWithExtension(extension = "js", stats, publicPath) {
+function getChunkAssetsMapWithExtension(extension, stats, publicPath) {
   const { assetsByChunkName } = stats;
   return mapValues(
     assetsByChunkName,
@@ -67,7 +67,7 @@ function getChunkAssetsMap(stats, publicPath) {
  * @param {String} publicPath
  * @return {Object}
  */
-function getModuleAssetsMap(stats, publicPath, pattern = "") {
+function getModuleAssetsMap(stats, publicPath, pattern = "", extension) {
   const { modules } = stats;
   const chunkAssetsMap = getChunkAssetsMap(stats, publicPath);
 
@@ -75,9 +75,20 @@ function getModuleAssetsMap(stats, publicPath, pattern = "") {
     (map, module) => {
       if (module.name.indexOf(pattern) > -1) {
         // eslint-disable-next-line no-param-reassign
-        map[module.name] = flatten(module.chunks.map(chunkId => chunkAssetsMap[chunkId])).filter(
-          (asset, i, arr) => arr.indexOf(asset) === i,
-        );
+        map[module.name] = flatten(
+          module.chunks.map(chunkId => chunkAssetsMap[chunkId]),
+        )
+          .filter(asset => {
+            if (extension != null) {
+              return asset.match(extension) != null;
+            }
+
+            return true;
+          })
+          .filter(asset => asset.match(/\.hot-update\./) == null)
+          .filter(
+            (asset, i, arr) => arr.indexOf(asset) === i,
+          );
       }
 
       return map;
@@ -91,7 +102,7 @@ function getTranslationAssetsMap(stats, publicPath) {
   return assets.reduce(
     (map, asset) => {
       const { name: assetName } = asset;
-      if (assetName.indexOf(".json") > -1) {
+      if (assetName.match(/(\.json)$/) != null) {
         const assetNameWithoutExtension = assetName.split(".")[0];
         const locale = assetNameWithoutExtension.split("_")[0];
         // eslint-disable-next-line no-param-reassign
@@ -108,9 +119,9 @@ export default function writeStats(statsData) {
   const stats = statsData.toJson();
 
   const content = {
-    modules: getModuleAssetsMap(stats, publicPath, "/components/"),
-    scripts: getChunkAssetsMapWithExtension("js", stats, publicPath),
-    stylesheets: getChunkAssetsMapWithExtension("css", stats, publicPath),
+    modules: getModuleAssetsMap(stats, publicPath, "/components/", /(\.js)$/),
+    scripts: getChunkAssetsMapWithExtension(/(\.js)$/, stats, publicPath),
+    stylesheets: getChunkAssetsMapWithExtension(/(\.css)$/, stats, publicPath),
     translations: getTranslationAssetsMap(stats, publicPath),
   };
 

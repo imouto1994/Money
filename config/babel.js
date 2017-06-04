@@ -12,7 +12,7 @@ const server = {
     // Server side es6 features not supported by node
     [
       "env",
-      { targets: { node: "current" }, modules: false, useBuiltIns: true },
+      { targets: { node: "current" }, useBuiltIns: true },
     ],
     "stage-0",
     "react",

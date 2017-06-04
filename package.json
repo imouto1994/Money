@@ -6,10 +6,9 @@
   "author": "Trong Nhan <imouto1994@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "dev": "yarn run dev-server & yarn run dev-webpack",
-    "dev-server": ". ./config.dev.sh && NODE_ENV=development nodemon index",
-    "dev-webpack": ". ./config.dev.sh && NODE_ENV=development node ./webpack",
+    "dev-client": ". ./config.dev.sh && NODE_ENV=development node ./webpack",
     "dev-server-build": ". ./config.dev.sh && NODE_ENV=development webpack --config ./webpack/server.dev.js",
+    "dev-server": ". ./config.dev.sh && NODE_ENV=development nodemon public/build/main.js",
     "build": ". ./config.dev.sh && [ -d public/build ] && rm -r public/build; NODE_ENV=production webpack --config ./webpack/client.prod.js",
     "prod": ". ./config.dev.sh && NODE_ENV=production node index",
     "lint": "eslint src"
@@ -26,7 +25,7 @@
     "csurf": "1.9.0",
     "es6-promise": "4.1.0",
     "express": "4.15.3",
-    "fetchr": "^0.5.37",
+    "fetchr": "0.5.37",
     "helmet": "3.6.0",
     "history": "4.6.1",
     "immutable": "3.8.1",
@@ -87,7 +86,7 @@
     "gulp": "3.9.1",
     "html-webpack-plugin": "2.28.0",
     "nodemon": "1.11.0",
-    "postcss-calc": "^6.0.0",
+    "postcss-calc": "6.0.0",
     "postcss-loader": "2.0.5",
     "postcss-mixins": "6.0.0",
     "postcss-nested": "2.0.2",
@@ -97,10 +96,7 @@
     "strip-loader": "0.1.2",
     "style-loader": "0.17.0",
     "webpack": "2.6.0",
-    "webpack-dev-middleware": "1.10.2",
     "webpack-dev-server": "2.4.5",
-    "webpack-hot-middleware": "2.18.0",
-    "webpack-hot-server-middleware": "0.1.0",
     "webpack-node-externals": "1.6.0"
   }
 }
