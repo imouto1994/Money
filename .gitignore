@@ -5,7 +5,8 @@ node_modules
 feature.dev.js
 
 # Cache
-.cache-loader
+.cache-loader-server
+.cache-loader-client
 
 # NPM Debug Log
 npm-debug.log

@@ -12,14 +12,20 @@ const server = {
     // Server side es6 features not supported by node
     [
       "env",
-      { targets: { node: 6.0 } },
+      { targets: { node: "current" }, modules: false, useBuiltIns: true },
     ],
     "stage-0",
     "react",
   ],
   plugins: [
     "dynamic-import-node",
-    // "transform-flow-strip-types",
+    [
+      // Remove duplication of babel-helpers
+      "transform-runtime",
+      // Remove all polyfills and shim for generators
+      { polyfill: false, regenerator: false },
+    ],
+    "transform-flow-strip-types",
   ],
 };
 
@@ -40,8 +46,8 @@ const client = {
       "transform-runtime",
       // Remove all polyfills and shim for generators
       { polyfill: false, regenerator: false },
-      "transform-flow-strip-types",
     ],
+    "transform-flow-strip-types",
   ],
 };
 

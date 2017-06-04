@@ -100,8 +100,7 @@ function render(req, res, next) {
       );
 
       // Retrieve modules which need to be loaded asynchronously
-      const rootDir = path.resolve(__dirname, "../../../");
-      const asyncModules = flushServerSideRequirePaths().map(p => `${p.replace(rootDir, ".")}.js`);
+      const asyncModules = flushServerSideRequirePaths().map(p => `./${p}.js`);
 
       // Retrieve required title, headers, links & scripts
       const helmet = Helmet.renderStatic();

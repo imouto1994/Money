@@ -1,4 +1,3 @@
-import { log } from "../../utils/log";
 import { LOCALES } from "../../Config";
 
 /**
@@ -8,21 +7,21 @@ import { LOCALES } from "../../Config";
  * @param {Function} next [description]
  */
 export function setLocale(req, res, next) {
-  log(`Detected locale from browser: ${req.locale}`);
+  console.log(`Detected locale from browser: ${req.locale}`);
 
   // Locale can be overridden by passing ?hl=<locale> in the querystring
   if (req.query.hl) {
     // But only the supported ones!
     if (LOCALES.indexOf(req.query.hl) > -1) {
       req.locale = req.query.hl;
-      log(`Locale has been overridden from querystring: ${req.locale}`);
+      console.log(`Locale has been overridden from querystring: ${req.locale}`);
     }
   }
   // Locale can also be overidden by setting a `hl` cookie
   else if (req.cookies.hl) {
     if (LOCALES.indexOf(req.cookies.hl) > -1) {
       req.locale = req.cookies.hl;
-      log(`Locale has been overidden from cookie: ${req.locale}`);
+      console.log(`Locale has been overidden from cookie: ${req.locale}`);
     }
   }
 

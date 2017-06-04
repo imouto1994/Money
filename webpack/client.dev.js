@@ -18,7 +18,7 @@ const WEBPACK_PORT = parseInt(SERVER_PORT, 10) + 1 || 4000;
 module.exports = {
   target: "web",
   // Source Map Configuration for JS Bundle
-  devtool: "cheap-module-eval-source-map",
+  devtool: "source-map",
   // Entry input for bundle
   entry: {
     main: [
@@ -71,7 +71,12 @@ module.exports = {
       {
         test: /\.js$/,
         use: [
-          "cache-loader",
+          {
+            loader: "cache-loader",
+            options: {
+              cacheDirectory: path.resolve(__dirname, "../.cache-loader-client"),
+            },
+          },
           {
             loader: "babel-loader",
             options: babelClientConfig,
@@ -102,7 +107,12 @@ module.exports = {
               singleton: true,
             },
           },
-          "cache-loader",
+          {
+            loader: "cache-loader",
+            options: {
+              cacheDirectory: path.resolve(__dirname, "../.cache-loader-client"),
+            },
+          },
           {
             loader: "css-loader",
             options: {
@@ -149,4 +159,5 @@ module.exports = {
       this.plugin("done", writeStats);
     },
   ],
+  performance: false,
 };

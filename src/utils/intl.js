@@ -1,7 +1,6 @@
 import { addLocaleData } from "react-intl";
 import get from "lodash/get";
 
-import { log } from "../utils/log";
 import { LOCALES_MAP, LOCALES, BROWSER } from "../Config";
 
 /**
@@ -31,13 +30,13 @@ export function polyfillServerIntl() {
         Intl.NumberFormat = IntlPolyfill.NumberFormat;
         Intl.DateTimeFormat = IntlPolyfill.DateTimeFormat;
         // eslint-disable-next-line max-len
-        log("Intl has been found, but locale data has been polyfilled due to missing support for one of the required locales");
+        console.log("Intl has been found, but locale data has been polyfilled due to missing support for one of the required locales");
       }
     }
     else {
       // eslint-disable-next-line global-require
       global.Intl = require("intl");
-      log("Intl is not supported, so the polyfill has been loaded");
+      console.log("Intl is not supported, so the polyfill has been loaded");
     }
   }
 }
@@ -56,12 +55,12 @@ export function loadIntlPolyfill(locale) {
     return Promise.resolve();
   }
 
-  log(`Intl or locale data for ${locale} is not available, downloading the polyfill...`);
+  console.log(`Intl or locale data for ${locale} is not available, downloading the polyfill...`);
   return import("intl" /* webpackChunkName: "intl" */)
     .then(IntlPolyfill => {
       Intl.NumberFormat = IntlPolyfill.NumberFormat;
       Intl.DateTimeFormat = IntlPolyfill.DateTimeFormat;
-      log(`Intl polyfill for ${locale} has been loaded`);
+      console.log(`Intl polyfill for ${locale} has been loaded`);
     });
 }
 
@@ -82,7 +81,7 @@ export function loadLocaleData(locale) {
         return import("react-intl/locale-data/zh" /* webpackChunkName: "locale-taiwan" */)
           .then(localeData => {
             addLocaleData(localeData);
-            log(`Locale data in ${locale} for 'react-intl' has been loaded`);
+            console.log(`Locale data in ${locale} for 'react-intl' has been loaded`);
           });
       }
       else {
@@ -92,7 +91,7 @@ export function loadLocaleData(locale) {
         )
           .then(([localeData]) => {
             addLocaleData(localeData);
-            log(`Locale data in ${locale} for 'react-intl' & 'intl' has been loaded`);
+            console.log(`Locale data in ${locale} for 'react-intl' & 'intl' has been loaded`);
           });
       }
     }
@@ -101,7 +100,7 @@ export function loadLocaleData(locale) {
         return import("react-intl/locale-data/zh" /* webpackChunkName: "locale-hongkong" */)
           .then(localeData => {
             addLocaleData(localeData);
-            log(`Locale data in ${locale} for 'react-intl' has been loaded`);
+            console.log(`Locale data in ${locale} for 'react-intl' has been loaded`);
           });
       }
       else {
@@ -111,7 +110,7 @@ export function loadLocaleData(locale) {
         )
           .then(([localeData]) => {
             addLocaleData(localeData);
-            log(`Locale data in ${locale} for 'react-intl' & 'intl' has been loaded`);
+            console.log(`Locale data in ${locale} for 'react-intl' & 'intl' has been loaded`);
           });
       }
     }
@@ -120,7 +119,7 @@ export function loadLocaleData(locale) {
         return import("react-intl/locale-data/ms" /* webpackChunkName: "locale-malay" */)
           .then(localeData => {
             addLocaleData(localeData);
-            log(`Locale data in ${locale} for 'react-intl' has been loaded`);
+            console.log(`Locale data in ${locale} for 'react-intl' has been loaded`);
           });
       }
       else {
@@ -130,7 +129,7 @@ export function loadLocaleData(locale) {
         )
           .then(([localeData]) => {
             addLocaleData(localeData);
-            log(`Locale data in ${locale} for 'react-intl' & 'intl' has been loaded`);
+            console.log(`Locale data in ${locale} for 'react-intl' & 'intl' has been loaded`);
           });
       }
     }
@@ -139,7 +138,7 @@ export function loadLocaleData(locale) {
         return import("react-intl/locale-data/id" /* webpackChunkName: "locale-indo" */)
           .then(localeData => {
             addLocaleData(localeData);
-            log(`Locale data in ${locale} for 'react-intl' has been loaded`);
+            console.log(`Locale data in ${locale} for 'react-intl' has been loaded`);
           });
       }
       else {
@@ -149,7 +148,7 @@ export function loadLocaleData(locale) {
         )
           .then(([localeData]) => {
             addLocaleData(localeData);
-            log(`Locale data in ${locale} for 'react-intl' & 'intl' has been loaded`);
+            console.log(`Locale data in ${locale} for 'react-intl' & 'intl' has been loaded`);
           });
       }
     }
@@ -158,7 +157,7 @@ export function loadLocaleData(locale) {
         return import("react-intl/locale-data/ko" /* webpackChunkName: "locale-korea" */)
           .then(localeData => {
             addLocaleData(localeData);
-            log(`Locale data in ${locale} for 'react-intl' has been loaded`);
+            console.log(`Locale data in ${locale} for 'react-intl' has been loaded`);
           });
       }
       else {
@@ -168,7 +167,7 @@ export function loadLocaleData(locale) {
         )
           .then(([localeData]) => {
             addLocaleData(localeData);
-            log(`Locale data in ${locale} for 'react-intl' & 'intl' has been loaded`);
+            console.log(`Locale data in ${locale} for 'react-intl' & 'intl' has been loaded`);
           });
       }
     }
@@ -179,7 +178,7 @@ export function loadLocaleData(locale) {
       else {
         return import("intl/locale-data/jsonp/en" /* webpackChunkName: "locale-english-no-intl" */)
           .then(() => {
-            log(`Locale data in ${locale} for 'intl' has been loaded`);
+            console.log(`Locale data in ${locale} for 'intl' has been loaded`);
           });
       }
     }

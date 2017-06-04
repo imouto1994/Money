@@ -8,7 +8,6 @@ import get from "lodash/get";
 import { updatePath } from "../actions/RouteActions";
 import { parseQueryString } from "../utils/route";
 import { isPutEffectWithAction, isBlockEffect } from "../utils/saga";
-import { log } from "../utils/log";
 import {
   ROUTE_CHANGE_COMPONENT,
   ROUTE_HISTORY_PUSH,
@@ -137,7 +136,7 @@ function* watchLocationChange(routes, history) {
   catch (error) {
     // TODO: Add proper route handling
     // eslint-disable-next-line no-console
-    log("Generic error handler for route handling");
+    console.log("Generic error handler for route handling");
   }
 }
 

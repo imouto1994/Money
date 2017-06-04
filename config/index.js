@@ -15,6 +15,7 @@ const CommonConfig = {
     [
       "NODE_ENV",
       "BROWSER",
+      "DEBUG",
     ],
   ),
 };

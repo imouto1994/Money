@@ -5,7 +5,6 @@ import ip from "ip";
 import configureEnvironment from "./config/environment";
 import configureRoutes from "./config/routes";
 import configureRender from "./config/render";
-import { log } from "../utils/log";
 import { polyfillServerIntl } from "../utils/intl";
 import { NODE_ENV, SERVER_PORT, ETHER_INTERFACE } from "../Config";
 
@@ -15,16 +14,16 @@ export default Promise
   .resolve()
   .then(() => polyfillServerIntl())
   .then(() => {
-    log(`Node Environment: ${NODE_ENV}`);
-    log("Setting up environment...");
+    console.log(`Node Environment: ${NODE_ENV}`);
+    console.log("Setting up environment...");
     return configureEnvironment(app);
   })
   .then(() => {
-    log("Setting up routing...");
+    console.log("Setting up routing...");
     return configureRoutes(app);
   })
   .then(() => {
-    log("Setting up rendering...");
+    console.log("Setting up rendering...");
     return configureRender(app);
   })
   .then(() => {
@@ -33,9 +32,9 @@ export default Promise
       parseInt(SERVER_PORT, 10),
       NODE_ENV === "production" ? ip.address(ETHER_INTERFACE) : null,
     );
-    log(`Server started at port ${SERVER_PORT}`);
+    console.log(`Server started at port ${SERVER_PORT}`);
   })
   .catch(err => {
-    log(err);
+    console.log(err);
     process.kill(process.pid, "SIGKILL");
   });
