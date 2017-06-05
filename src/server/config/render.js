@@ -3,7 +3,6 @@ import { renderToString, renderToStaticMarkup } from "react-dom/server";
 import Helmet from "react-helmet";
 import createMemoryHistory from "history/createMemoryHistory";
 import { END } from "redux-saga";
-import path from "path";
 import { flushServerSideRequirePaths } from "react-loadable";
 import qs from "qs";
 import Fetchr from "fetchr";

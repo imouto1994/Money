@@ -9,11 +9,13 @@ const webpack = require("webpack");
 const path = require("path");
 const mapValues = require("lodash/mapValues");
 const nodeExternals = require("webpack-node-externals");
+const ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 const { SERVER_PORT } = require("../config").default;
 const serverConfig = require("../config").default.createConfig(false);
 const { server: babelServerConfig } = require("../config/babel");
 const featureFlags = require("../feature");
+const { formatCriticalCSSJson } = require("./utils/writeStats");
 
 const ASSETS_PATH = path.resolve(__dirname, "../public/build");
 const WEBPACK_HOST = "localhost";
@@ -66,25 +68,30 @@ module.exports = {
       // CSS Modules
       {
         test: /\.css$/,
-        use: [
-          {
-            loader: "cache-loader",
-            options: {
-              cacheDirectory: path.resolve(__dirname, "../.cache-loader-server"),
+        use: ExtractTextPlugin.extract({
+          use: [
+            // {
+            //   loader: "cache-loader",
+            //   options: {
+            //     cacheDirectory: path.resolve(__dirname, "../.cache-loader-server"),
+            //   },
+            // },
+            {
+              loader: path.resolve(__dirname, "./utils/criticalCSSLoader"),
             },
-          },
-          {
-            loader: "css-loader",
-            options: {
-              modules: true,
-              importLoaders: 1,
-              localIdentName: "[name]__[local]___[hash:base64:5]",
+            {
+              loader: "css-loader",
+              options: {
+                modules: true,
+                importLoaders: 1,
+                localIdentName: "[name]__[local]___[hash:base64:5]",
+              },
             },
-          },
-          {
-            loader: "postcss-loader",
-          },
-        ],
+            {
+              loader: "postcss-loader",
+            },
+          ],
+        }),
         include: [
           path.resolve(__dirname, "../src/"),
         ],
@@ -99,22 +106,38 @@ module.exports = {
       _FEATURE_: mapValues(featureFlags, value => JSON.stringify(value)),
     }),
 
+    // Bundle CSS file from the "extract-text-plugin" loader
+    new ExtractTextPlugin("css-map.json"),
+
     // Add source map at the top of each generated chunk
     new webpack.BannerPlugin({
       banner: "require('source-map-support').install();",
       raw: true,
       entryOnly: false,
+      test: /(\.js)$/,
     }),
 
+    // // Enable Hot Reload for development environment
+    // new webpack.HotModuleReplacementPlugin(),
+    // new webpack.NamedModulesPlugin(),
+
+    // Limit number of chunks to only one for server bundle
     new webpack.optimize.LimitChunkCountPlugin({
       maxChunks: 1,
     }),
+
+    function StatsWriterPlugin() {
+      this.plugin("done", formatCriticalCSSJson);
+    },
   ],
+  // Node variables configuration
   node: {
     __dirname: true,
     __filename: true,
   },
+  // Disable performance check for development environment
   performance: false,
+  // Node Externals
   externals: [
     nodeExternals({
       whitelist: [
@@ -122,9 +145,9 @@ module.exports = {
       ],
     }),
   ],
-  resolve: {
-    alias: {
-      src: path.resolve(__dirname, "../src/"),
-    },
-  }
+  // Watch mode
+  watch: true,
+  watchOptions: {
+    ignored: /node_modules/,
+  },
 };

@@ -1,15 +1,19 @@
+@value colors: "../_styles/colors.css";
+@value grayFive, brandPrimary from colors;
+
 .container {
-  color: black;
+  color: grayFive;
 }
 
 .header {
-  color: red;
+  color: brandPrimary;
 }
 
 .links {
-  color: green;
+  color: grayFive;
 }
 
 .link {
-  color: blue;
+  color: grayFive;
+  content: "";
 }

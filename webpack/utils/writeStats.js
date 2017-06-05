@@ -127,3 +127,21 @@ export default function writeStats(statsData) {
 
   fs.writeFileSync(STATS_FILE_PATH, JSON.stringify(content));
 }
+
+export function formatCriticalCSSJson() {
+  const filePath = path.resolve(__dirname, "../../public/build/css-map.json");
+  const str = fs.readFileSync(filePath, "utf-8")
+    .trim()
+    .slice(0, -1)
+    .replace(/(?:\r\n|\r|\n)/g, "\\\\n")
+    .replace(
+      /({"module": ".*", "css": ")(.*)("})/g,
+      function (match, p1, p2, p3) {
+        return p1 + p2.replace(/"/g, "\\\\\"") + p3;
+      },
+    );
+  fs.writeFileSync(
+    filePath,
+    `[${str}]`,
+  );
+}

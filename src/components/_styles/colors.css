@@ -1,0 +1,13 @@
+@value grayBase: #FFFFFF;
+@value grayZero: #F2F2F2; /* darken 5% */
+@value grayOne: #E6E6E6; /* darken 10% */
+@value grayTwo: #CCCCCC; /* darken 20% */
+@value grayThree: #B3B3B3; /* darken 30% */
+@value grayFour: #999999; /* darken 40% */
+@value grayFive: #808080; /* darken 50% */
+@value graySix: #666666; /* darken 60% */
+@value graySeven: #4D4D4D; /* darken 70% */
+@value grayEight: #333333; /* darken 80% */
+@value grayNine: #1A1A1A; /* darken 90% */
+
+@value brandPrimary: #D2232A;

@@ -11,6 +11,8 @@ module.exports = () => ({
     require("postcss-simple-vars")(),
     // Auto transform `calc` if possible to reduce computation
     require("postcss-calc")(),
+    // Remove comments
+    require("postcss-discard-comments")(),
   ],
 });
 /* eslint-enable global-require */
