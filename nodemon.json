@@ -2,6 +2,6 @@
   "delay": "1000",
   "ignore": [
     "node_modules/**/node_modules",
-    "src/server/config/webpack-stats.json"
+    "public/build/webpack-stats.json"
   ]
 }

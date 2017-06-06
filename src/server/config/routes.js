@@ -7,8 +7,8 @@ import Fetchr from "fetchr";
  */
 export default function (app) {
   // Register Fetchr Services
-  
-  
+
+
   // Register Fetchr Middleware
   app.use("/ui/iso", Fetchr.middleware());
 }

@@ -3,6 +3,7 @@ import React, { PureComponent } from "react";
 import Link from "../Link";
 import PageHome from "../PageHome";
 
+import commonStyles from "../_styles/common.css";
 import styles from "./PageProduct.css";
 
 class PageProduct extends PureComponent {
@@ -12,7 +13,7 @@ class PageProduct extends PureComponent {
 
   render() {
     return (
-      <div className={ styles.container }>
+      <div className={ `${styles.container} ${commonStyles.block}` }>
         <h1 className={ styles.header }>
           PRODUCT
         </h1>

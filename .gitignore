@@ -24,8 +24,5 @@ src/intl/json/
 src/intl/locale/
 src/intl/locale-backup/
 
-# Webpack Stats
-src/server/config/webpack-stats.json
-
 # Webpack Build Files
 public/build/

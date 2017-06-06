@@ -24,18 +24,18 @@ import {
 let webpackAssets;
 if (NODE_ENV === "production") {
   // eslint-disable-next-line global-require
-  webpackAssets = require("./webpack-stats.json");
+  webpackAssets = require("../../../public/build/webpack-stats.json");
 }
 
 // eslint-disable-next-line no-unused-vars
 function render(req, res, next) {
   if (NODE_ENV === "development") {
     // eslint-disable-next-line global-require
-    webpackAssets = require("./webpack-stats.json");
+    webpackAssets = require("../../../public/build/webpack-stats.json");
 
     // Do not cache webpack stats: the script file would change since
     // hot module replacement is enabled in the development env
-    delete require.cache[require.resolve("./webpack-stats.json")];
+    delete require.cache[require.resolve("../../../public/build/webpack-stats.json")];
   }
 
   // Initialize Fetchr Server Instance

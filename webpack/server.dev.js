@@ -15,7 +15,7 @@ const { SERVER_PORT } = require("../config").default;
 const serverConfig = require("../config").default.createConfig(false);
 const { server: babelServerConfig } = require("../config/babel");
 const featureFlags = require("../feature");
-const { formatCriticalCSSJson } = require("./utils/writeStats");
+const { default: formatCriticalCSSJson } = require("./utils/cssMapJsonFormat");
 
 const ASSETS_PATH = path.resolve(__dirname, "../public/build");
 const WEBPACK_HOST = "localhost";
@@ -77,7 +77,7 @@ module.exports = {
             //   },
             // },
             {
-              loader: path.resolve(__dirname, "./utils/criticalCSSLoader"),
+              loader: path.resolve(__dirname, "./utils/cssMapJsonLoader"),
             },
             {
               loader: "css-loader",

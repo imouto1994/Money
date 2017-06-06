@@ -3,7 +3,7 @@ const path = require("path");
 const flatten = require("lodash/flatten");
 const mapValues = require("lodash/mapValues");
 
-const STATS_FILE_PATH = path.resolve(__dirname, "../../src/server/config/webpack-stats.json");
+const STATS_FILE_PATH = path.resolve(__dirname, "../../public/build/webpack-stats.json");
 
 /**
  * Get assets for a chunk with specific extension
@@ -73,7 +73,7 @@ function getModuleAssetsMap(stats, publicPath, pattern = "", extension) {
 
   return modules.reduce(
     (map, module) => {
-      if (module.name.indexOf(pattern) > -1) {
+      if (module.name.match(pattern) != null) {
         // eslint-disable-next-line no-param-reassign
         map[module.name] = flatten(
           module.chunks.map(chunkId => chunkAssetsMap[chunkId]),
@@ -89,6 +89,30 @@ function getModuleAssetsMap(stats, publicPath, pattern = "", extension) {
           .filter(
             (asset, i, arr) => arr.indexOf(asset) === i,
           );
+      }
+
+      return map;
+    },
+    {},
+  );
+}
+
+function getModuleCSSMap(stats) {
+  const { modules } = stats;
+
+  /* eslint-disable no-param-reassign */
+  return modules.reduce(
+    (map, module) => {
+      if (module.name.match(/\/components\/.*\/.*\.css/) != null) {
+        module.reasons.forEach(reason => {
+          const reasonModuleName = reason.moduleName;
+          if (reasonModuleName.match(/\/components\/.*\/.*\.js/) != null) {
+            if (map[reasonModuleName] == null) {
+              map[reasonModuleName] = [];
+            }
+            map[reasonModuleName].push(module.name);
+          }
+        });
       }
 
       return map;
@@ -119,29 +143,12 @@ export default function writeStats(statsData) {
   const stats = statsData.toJson();
 
   const content = {
-    modules: getModuleAssetsMap(stats, publicPath, "/components/", /(\.js)$/),
+    modules: getModuleAssetsMap(stats, publicPath, /^(\.\/src\/components\/.*\/.*\.js)$/, /(\.js)$/),
+    moduleCSS: getModuleCSSMap(stats),
     scripts: getChunkAssetsMapWithExtension(/(\.js)$/, stats, publicPath),
     stylesheets: getChunkAssetsMapWithExtension(/(\.css)$/, stats, publicPath),
     translations: getTranslationAssetsMap(stats, publicPath),
   };
 
   fs.writeFileSync(STATS_FILE_PATH, JSON.stringify(content));
-}
-
-export function formatCriticalCSSJson() {
-  const filePath = path.resolve(__dirname, "../../public/build/css-map.json");
-  const str = fs.readFileSync(filePath, "utf-8")
-    .trim()
-    .slice(0, -1)
-    .replace(/(?:\r\n|\r|\n)/g, "\\\\n")
-    .replace(
-      /({"module": ".*", "css": ")(.*)("})/g,
-      function (match, p1, p2, p3) {
-        return p1 + p2.replace(/"/g, "\\\\\"") + p3;
-      },
-    );
-  fs.writeFileSync(
-    filePath,
-    `[${str}]`,
-  );
 }
