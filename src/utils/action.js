@@ -22,9 +22,7 @@ export function createActionCreatorFromArgs(type) {
   return function actionCreator(...args) {
     return {
       type,
-      payload: [
-        ...args,
-      ],
+      payload: [...args],
     };
   };
 }

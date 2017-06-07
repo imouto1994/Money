@@ -11,18 +11,15 @@ const mapValues = require("lodash/mapValues");
 const nodeExternals = require("webpack-node-externals");
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 
-const { SERVER_PORT } = require("../config").default;
 const serverConfig = require("../config").default.createConfig(false);
 const { server: babelServerConfig } = require("../config/babel");
 const featureFlags = require("../feature");
 const { default: formatCriticalCSSJson } = require("./utils/cssMapJsonFormat");
 
-const ASSETS_PATH = path.resolve(__dirname, "../public/build");
-const WEBPACK_HOST = "localhost";
-const WEBPACK_PORT = parseInt(SERVER_PORT, 10) + 1 || 4000;
+const ASSETS_PATH = path.resolve(__dirname, "../public/build/server");
 
 /**
- * Configuration for client bundle in development mode
+ * Configuration for server bundle in development mode
  */
 module.exports = {
   // Target for bundle
@@ -42,7 +39,7 @@ module.exports = {
     filename: "[name].js",
     chunkFilename: "[name].js",
     libraryTarget: "commonjs2",
-    publicPath: `http://${WEBPACK_HOST}:${WEBPACK_PORT}/build/`,
+    publicPath: "/build/server/",
   },
   // Modules for webpack to compile
   module: {
@@ -53,7 +50,10 @@ module.exports = {
           {
             loader: "cache-loader",
             options: {
-              cacheDirectory: path.resolve(__dirname, "../.cache-loader-server"),
+              cacheDirectory: path.resolve(
+                __dirname,
+                "../.cache-loader-server"
+              ),
             },
           },
           {
@@ -61,21 +61,22 @@ module.exports = {
             options: babelServerConfig,
           },
         ],
-        exclude: [
-          path.resolve(__dirname, "../node_modules/"),
-        ],
+        exclude: [path.resolve(__dirname, "../node_modules/")],
       },
       // CSS Modules
       {
         test: /\.css$/,
         use: ExtractTextPlugin.extract({
           use: [
-            // {
-            //   loader: "cache-loader",
-            //   options: {
-            //     cacheDirectory: path.resolve(__dirname, "../.cache-loader-server"),
-            //   },
-            // },
+            {
+              loader: "cache-loader",
+              options: {
+                cacheDirectory: path.resolve(
+                  __dirname,
+                  "../.cache-loader-server"
+                ),
+              },
+            },
             {
               loader: path.resolve(__dirname, "./utils/cssMapJsonLoader"),
             },
@@ -92,9 +93,7 @@ module.exports = {
             },
           ],
         }),
-        include: [
-          path.resolve(__dirname, "../src/"),
-        ],
+        include: [path.resolve(__dirname, "../src/")],
       },
     ],
   },
@@ -117,15 +116,12 @@ module.exports = {
       test: /(\.js)$/,
     }),
 
-    // // Enable Hot Reload for development environment
-    // new webpack.HotModuleReplacementPlugin(),
-    // new webpack.NamedModulesPlugin(),
-
     // Limit number of chunks to only one for server bundle
     new webpack.optimize.LimitChunkCountPlugin({
       maxChunks: 1,
     }),
 
+    // Format CSS Map
     function StatsWriterPlugin() {
       this.plugin("done", formatCriticalCSSJson);
     },
@@ -140,10 +136,11 @@ module.exports = {
   // Node Externals
   externals: [
     nodeExternals({
-      whitelist: [
-        "source-map-support/register",
-      ],
+      whitelist: ["source-map-support/register"],
     }),
+    /(\/css-map.json)$/,
+    /(\/webpack-stats.json)$/,
+    /(\/views\/index.marko)$/,
   ],
   // Watch mode
   watch: true,

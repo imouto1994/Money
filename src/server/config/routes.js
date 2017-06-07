@@ -2,12 +2,10 @@ import Fetchr from "fetchr";
 
 /**
  * API Routes
- * @param {Application} app
- * @return {Promise}
+ * @param {Express} app
  */
-export default function (app) {
-  // Register Fetchr Services
-
+export default function(app) {
+  // TODO: Register Fetchr Services
 
   // Register Fetchr Middleware
   app.use("/ui/iso", Fetchr.middleware());

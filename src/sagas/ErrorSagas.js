@@ -10,6 +10,9 @@ import {
   STATUS_CODE_TEMP_REDIRECT,
 } from "../constants/Http";
 
+/**
+ * Watch dispatched actions with error
+ */
 export function* watchErrors() {
   // eslint-disable-next-line no-constant-condition
   while (true) {
@@ -18,24 +21,26 @@ export function* watchErrors() {
     const code = status || statusCode;
     const isForbidden = code === STATUS_CODE_FORBIDDEN;
     const isUnauthorized = code === STATUS_CODE_UNAUTHORIZED;
-    const isRedirect = code === STATUS_CODE_PERMANENT_REDIRECT || code === STATUS_CODE_TEMP_REDIRECT;
+    const isRedirect =
+      code === STATUS_CODE_PERMANENT_REDIRECT ||
+      code === STATUS_CODE_TEMP_REDIRECT;
     const isServerError = code > 500;
+
     if (isForbidden) {
       // Redirect to Login page with the redirected URL
       const url = yield select(routeUrlSelector);
       const query = qs.stringify({ next: url });
       yield put(push(`/login?${query}`));
-    }
-    else if (isUnauthorized) {
+    } else if (isUnauthorized) {
       // Redirect to Login page with the redirected URL
       const url = yield select(routeUrlSelector);
       const query = qs.stringify({ next: url });
       yield put(push(`/login?${query}`));
-    }
-    else if (isRedirect && redirectPath) {
+    } else if (isRedirect && redirectPath) {
+      // Redirect to corresponding path
       yield put(push(redirectPath));
-    }
-    else if (isServerError) {
+    } else if (isServerError) {
+      // Alert if it is unexpected internal server error
       yield fork(alert, `Internal Server Error ${code} T_T`);
     }
   }

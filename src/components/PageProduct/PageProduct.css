@@ -1,4 +1,4 @@
-@value colors: "../_styles/colors.css";
+@value colors: "../../styles/colors.css";
 @value grayFive, brandPrimary from colors;
 
 .container {

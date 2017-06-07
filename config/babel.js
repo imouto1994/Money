@@ -9,15 +9,15 @@ const NODE_ENV = process.env.NODE_ENV || "development";
 // Babel config for server (node)
 const server = {
   presets: [
-    // Server side es6 features not supported by node
-    [
-      "env",
-      { targets: { node: "current" }, useBuiltIns: true },
-    ],
+    // ES6 features not supported by NodeJS
+    ["env", { targets: { node: "current" }, useBuiltIns: true }],
+    // Stage-0 proposal features
     "stage-0",
+    // React
     "react",
   ],
   plugins: [
+    // Polyfill dynamic import for NodeJS. This will make it as a defer import
     "dynamic-import-node",
     [
       // Remove duplication of babel-helpers
@@ -25,6 +25,17 @@ const server = {
       // Remove all polyfills and shim for generators
       { polyfill: false, regenerator: false },
     ],
+    // Custom plugin to support `withStyles` HoC
+    "withStyles/babel",
+    // Custom plugin to support `react-loadable` HoC
+    [
+      "react-loadable/babel",
+      {
+        server: true,
+        webpack: false,
+      },
+    ],
+    // Strip all Flow types
     "transform-flow-strip-types",
   ],
 };
@@ -37,7 +48,9 @@ const client = {
       // We will use modules from Webpack instead for client bundle
       { modules: false },
     ],
+    // Stage-0 proposal features
     "stage-0",
+    // React
     "react",
   ],
   plugins: [
@@ -47,6 +60,15 @@ const client = {
       // Remove all polyfills and shim for generators
       { polyfill: false, regenerator: false },
     ],
+    // Custom plugin to support `react-loadable` HoC
+    [
+      "react-loadable/babel",
+      {
+        server: false,
+        webpack: true,
+      },
+    ],
+    // Strip all Flow types
     "transform-flow-strip-types",
   ],
 };
@@ -61,12 +83,9 @@ if (NODE_ENV === "production") {
     // A preset to optimize react
     "react-optimize",
   ]);
-}
-else if (NODE_ENV === "development") {
+} else if (NODE_ENV === "development") {
   // Hot Module Reload for React
-  client.plugins = client.plugins.concat([
-    "react-hot-loader/babel",
-  ]);
+  client.plugins = client.plugins.concat(["react-hot-loader/babel"]);
 }
 
 module.exports = { server, client };

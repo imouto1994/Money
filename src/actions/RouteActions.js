@@ -7,7 +7,10 @@ import {
   ROUTE_HISTORY_GO_BACK,
   ROUTE_HISTORY_GO_FORWARD,
 } from "../constants/Actions";
-import { createActionCreator, createActionCreatorFromArgs } from "../utils/action";
+import {
+  createActionCreator,
+  createActionCreatorFromArgs,
+} from "../utils/action";
 
 export const changeComponent = createActionCreator(ROUTE_CHANGE_COMPONENT);
 export const updatePath = createActionCreator(ROUTE_UPDATE_PATH);

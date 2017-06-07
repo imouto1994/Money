@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang=(input.lang) data-lang-file=(input.langFile)>
+  <head>
+    $!{input.helmetTitle}
+    $!{input.helmetMeta}
+    $!{input.helmetLink}
+    <for(cssFile in input.cssFiles)>
+      <link rel="preload" href=(cssFile) as="style" onload="this.rel='stylesheet'" />
+    </for>
+    <for(cssFile in input.cssFiles)>
+      <noscript>
+        <link rel="stylesheet" href=(cssFile) />
+      </noscript>
+    </for>
+    <style>
+      $!{input.criticalStyles}
+    </style>
+  </head>
+  <body>
+    <div id="root">
+      $!{input.markup}
+    </div>
+    <script>
+      $!{state.cssRelPreload}
+      $!{state.loadCSS}
+    </script>
+    <script>
+      window.__data = $!{input.state};
+    </script>
+    <script>
+      window._csrf = '$!{input.csrf}';
+    </script>
+    $!{input.helmetScript}
+    <for(scriptFile in input.scriptFiles)>
+      <script async=(scriptFile.async) src=(scriptFile.path) />
+    </for>
+  </body>
+</html>

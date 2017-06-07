@@ -9,7 +9,7 @@ feature.dev.js
 .cache-loader-client
 
 # NPM Debug Log
-npm-debug.log
+npm-debug.log.*
 
 # Dev Configs
 config.sh
@@ -26,3 +26,9 @@ src/intl/locale-backup/
 
 # Webpack Build Files
 public/build/
+
+# Marko Generated Templates
+src/server/views/*.marko.js
+
+# Webpack Stats
+stats.json

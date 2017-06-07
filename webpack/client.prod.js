@@ -10,37 +10,43 @@ const webpack = require("webpack");
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const mapValues = require("lodash/mapValues");
 
-const config = require("../src/Config").default;
+const { ASSETS_ROOT_URL } = require("../config").default;
+const clientConfig = require("../config").default.createConfig(true);
 const { client: babelClientConfig } = require("../config/babel");
 const featureFlags = require("../feature");
 const writeStats = require("./utils/writeStats").default;
 
-const assetsPath = path.join(__dirname, "../public/build");
-const publicPath = `${config.ASSETS_ROOT_URL}/build/`;
+const ASSETS_PATH = path.join(__dirname, "../public/build/client");
+const PUBLIC_PATH = `${ASSETS_ROOT_URL}/build/client/`;
 
 /**
 * Configuration for client bundle in production mode
 */
-// TODO: Update config with all the changes
 module.exports = {
+  // Webpack Build Target
   target: "web",
+  // Source Map Configuration for JS Bundle
+  devtool: "source-map",
+  // Entry input for bundle
   entry: {
-    main: "./src/client.js",
+    main: "./src/client/index.js",
     vendor: [
+      "immutable",
+      "prop-types",
       "react",
       "react-dom",
-      "prop-types",
       "redux",
       "react-redux",
       "reselect",
       "redux-saga",
     ],
+    tx: ["./src/intl/index.js"],
   },
   output: {
-    path: assetsPath,
+    path: ASSETS_PATH,
     filename: "[name]_[hash].js",
-    chunkFilename: "[name]_[hash].js",
-    publicPath,
+    chunkFilename: "[name]_[chunkhash].js",
+    publicPath: PUBLIC_PATH,
   },
   module: {
     rules: [
@@ -54,9 +60,7 @@ module.exports = {
             },
           },
         ],
-        include: [
-          path.resolve(__dirname, "../src/"),
-        ],
+        include: [path.resolve(__dirname, "../src/")],
       },
       {
         test: /\.js$/,
@@ -66,9 +70,7 @@ module.exports = {
             options: babelClientConfig,
           },
         ],
-        exclude: [
-          path.resolve(__dirname, "../node_modules/"),
-        ],
+        exclude: [path.resolve(__dirname, "../node_modules/")],
       },
       {
         test: /\.(otf|eot|svg|ttf|woff|woff2)$/,
@@ -81,7 +83,7 @@ module.exports = {
           },
         ],
       },
-     // CSS Modules
+      // CSS Modules
       {
         test: /\.css$/,
         use: ExtractTextPlugin.extract({
@@ -107,18 +109,16 @@ module.exports = {
             },
           ],
         }),
-        include: [
-          path.resolve(__dirname, "../src/"),
-        ],
+        include: [path.resolve(__dirname, "../src/")],
       },
     ],
   },
   plugins: [
     // Ignore `debug` statements
-    new webpack.NormalModuleReplacementPlugin(/debug/, `${process.cwd()}/webpack/utils/noop.js`),
-
-    // Bundle CSS file from the "extract-text-plugin" loader
-    new ExtractTextPlugin("[name]_[hash].css"),
+    new webpack.NormalModuleReplacementPlugin(
+      /debug/,
+      `${process.cwd()}/webpack/utils/noop.js`
+    ),
 
     // Common Chunk Plugin
     new webpack.optimize.CommonsChunkPlugin({
@@ -128,8 +128,14 @@ module.exports = {
 
     // Environment variables
     new webpack.DefinePlugin({
-      "process.env": mapValues(config, value => JSON.stringify(value)),
+      "process.env": mapValues(clientConfig, value => JSON.stringify(value)),
       _FEATURE_: mapValues(featureFlags, value => JSON.stringify(value)),
+    }),
+
+    // Bundle CSS file from the "extract-text-plugin" loader
+    new ExtractTextPlugin({
+      filename: "[name]_[hash].css",
+      allChunks: true,
     }),
 
     // Optimization Plugins
@@ -152,6 +158,7 @@ module.exports = {
       },
     }),
 
+    // Write necessary statistics to `webpack-stats.json`
     function StatsWriterPlugin() {
       this.plugin("done", writeStats);
     },

@@ -1,3 +1,7 @@
+// Enable 'require' for Marko Template in NodeJS environment
+import "marko/node-require";
+import express from "express";
+import markoExpress from "marko/express";
 import path from "path";
 import morgan from "morgan";
 import helmet from "helmet";
@@ -12,12 +16,13 @@ import locale from "locale";
 import { blockBot } from "../middlewares/block";
 import { healthCheck } from "../middlewares/health";
 import { setLocale } from "../middlewares/locale";
-import { NODE_ENV, LOCALES } from "../../Config";
+import { LOCALES } from "../../Config";
 
 /**
  * Setup environment for application server
+ * @param {Express} app
  */
-export default function (app) {
+export default function(app) {
   /**
    * Let 'express' server know that it is behind a proxy
    */
@@ -26,10 +31,9 @@ export default function (app) {
   /**
    * Logger Middleware
    */
-  if (NODE_ENV === "production") {
+  if (process.env.NODE_ENV === "production") {
     app.use(morgan("combined"));
-  }
-  else {
+  } else {
     app.use(morgan("dev"));
   }
 
@@ -43,7 +47,7 @@ export default function (app) {
       maxAge: 10886400000,
       preload: true,
       force: true,
-    }),
+    })
   );
   app.use(helmet.hidePoweredBy({ setTo: "Ruby on Rails" }));
   app.use(helmet.ieNoOpen());
@@ -63,7 +67,9 @@ export default function (app) {
   /**
    * FavIcon Middleware
    */
-  app.use(favicon(path.resolve(__dirname, "../../../public/favicons/favicon.ico")));
+  app.use(
+    favicon(path.resolve(__dirname, "../../../public/favicons/favicon.ico"))
+  );
 
   /**
    * CORS Middleware
@@ -73,7 +79,7 @@ export default function (app) {
       origin: ["carousell.com"],
       methods: ["GET", "POST", "PUT", "DELETE"],
       preflightContinue: true,
-    }),
+    })
   );
 
   /**
@@ -102,6 +108,21 @@ export default function (app) {
   app.use(
     csurf({
       cookie: { path: "/" },
-    }),
+    })
   );
+
+  /**
+   * Static
+   */
+  if (process.env.NODE_ENV === "production") {
+    app.use(
+      "/build/client",
+      express.static(path.resolve(__dirname, "../../../public/build/client"))
+    );
+  }
+
+  /**
+   * Marko Middleware
+   */
+  app.use(markoExpress());
 }

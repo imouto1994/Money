@@ -6,8 +6,10 @@ import { AppContainer } from "react-hot-loader";
 
 import Application from "../Application";
 import { serverDateSelector } from "../../selectors/ApplicationSelectors";
-import { BROWSER, NODE_ENV } from "../../Config";
 
+/**
+ * Root element of the application where it will ask for connection to all external data
+ */
 class Root extends PureComponent {
   static propTypes = {
     store: PropTypes.object.isRequired,
@@ -15,11 +17,16 @@ class Root extends PureComponent {
     messages: PropTypes.object.isRequired,
   };
 
+  /**
+   * Main render function, which might have content that only applies for development environment
+   * such as hot-reload wrapper
+   * @return {JSXElement}
+   */
   render() {
-    if (BROWSER && NODE_ENV === "development") {
+    if (process.env.BROWSER && process.env.NODE_ENV === "development") {
       return (
         <AppContainer>
-          { this.renderMain() }
+          {this.renderMain()}
         </AppContainer>
       );
     }
@@ -27,16 +34,20 @@ class Root extends PureComponent {
     return this.renderMain();
   }
 
+  /**
+   * Render all production elements
+   * @return {JSXElement}
+   */
   renderMain() {
     const { store, locale, messages } = this.props;
 
     return (
       <IntlProvider
-        initialNow={ serverDateSelector(store.getState()) }
-        locale={ locale }
-        messages={ messages }
+        initialNow={serverDateSelector(store.getState())}
+        locale={locale}
+        messages={messages}
       >
-        <Provider store={ store }>
+        <Provider store={store}>
           <Application />
         </Provider>
       </IntlProvider>

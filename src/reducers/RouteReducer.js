@@ -23,9 +23,9 @@ const initialState = new Map({
 
 /**
  * Reducer for 'Route' module of Redux Store
- * @param  {Immutable Map} state
+ * @param  {Immutable.Map} state
  * @param  {Action} action
- * @return {Immutable Map}
+ * @return {Immutable.Map}
  */
 export default function routeReducer(state = initialState, action) {
   const { type, payload } = action;
@@ -43,9 +43,9 @@ export default function routeReducer(state = initialState, action) {
 }
 
 /**
- * Dehydrate state for passing to client on server side
- * @param {Immutable Map} state
- * @return {Object} [description]
+ * Custom dehydrate for 'Route' module
+ * @param {Immutable.Map} state
+ * @return {Object}
  */
 export function dehydrate(state) {
   // Delete property 'component' since it cannot be stringified into JSON format

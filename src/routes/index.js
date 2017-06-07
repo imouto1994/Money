@@ -16,10 +16,7 @@ const Routes = [
       saga({ RouteComponent }) {
         return executeMultiple({
           preload: RouteComponent.preload,
-          updateComponent: [
-            "preload",
-            put(changeComponent(RouteComponent)),
-          ],
+          updateComponent: ["preload", put(changeComponent(RouteComponent))],
         });
       },
     },
@@ -45,15 +42,17 @@ const Routes = [
 ];
 
 // Dictionary from each route to its respective component to be displayed
-const RouteComponentMap = Routes.reduce(
-  (m, route) => {
-    // eslint-disable-next-line no-param-reassign
-    m[route.handler.name] = route.handler.component;
-    return m;
-  },
-  {},
-);
+const RouteComponentMap = Routes.reduce((m, route) => {
+  // eslint-disable-next-line no-param-reassign
+  m[route.handler.name] = route.handler.component;
+  return m;
+}, {});
 
+/**
+ * Fetch the corresponding component for the given route
+ * @param {String} routeName - name of the route
+ * @return {React.Component}
+ */
 function getRouteComponent(routeName) {
   return RouteComponentMap[routeName];
 }

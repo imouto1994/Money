@@ -2,6 +2,10 @@ import React, { PureComponent } from "react";
 import PropTypes from "prop-types";
 import { Map } from "immutable";
 
+/**
+ * Main component for the whole application
+ * This will be the top-level component to be connected with external data such as Redux Store
+ */
 class Application extends PureComponent {
   static propTypes = {
     routeComponent: PropTypes.func,
@@ -13,6 +17,10 @@ class Application extends PureComponent {
     chunkScripts: new Map(),
   };
 
+  /**
+   * Main render function
+   * @return {JSXElement}
+   */
   render() {
     const { routeComponent: RouteComponent } = this.props;
 
@@ -23,9 +31,8 @@ class Application extends PureComponent {
           <RouteComponent />
         </div>
       );
-    }
-    // Placeholder when no component is selected
-    else {
+    } else {
+      // Placeholder when no component is selected
       return (
         <div>
           <h1>Loading</h1>

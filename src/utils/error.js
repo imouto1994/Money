@@ -1,7 +1,7 @@
 /**
- * [createHttpError description]
- * @param {[type]} statusCode [description]
- * @return {[type]} [description]
+ * Create HTTP Error object
+ * @param {String} statusCode
+ * @return {Error}
  */
 export function createHttpError(statusCode) {
   const err = new Error();

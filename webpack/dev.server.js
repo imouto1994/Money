@@ -31,5 +31,7 @@ const webpackCompiler = webpack(WebpackConfig);
 const webpackDevServer = new WebpackDevServer(webpackCompiler, serverOptions);
 
 webpackDevServer.listen(WEBPACK_SERVER_PORT, WEBPACK_SERVER_HOST, () => {
-  log(`Webpack development server listening on ${WEBPACK_SERVER_HOST}:${WEBPACK_SERVER_PORT}`);
+  log(
+    `Webpack development server listening on ${WEBPACK_SERVER_HOST}:${WEBPACK_SERVER_PORT}`
+  );
 });

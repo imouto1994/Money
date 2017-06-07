@@ -8,7 +8,7 @@ const { client: babelClientConfig } = require("../config/babel");
 const featureFlags = require("../feature");
 const writeStats = require("./utils/writeStats").default;
 
-const ASSETS_PATH = path.resolve(__dirname, "../public/build");
+const ASSETS_PATH = path.resolve(__dirname, "../public/build/client");
 const WEBPACK_HOST = "localhost";
 const WEBPACK_PORT = parseInt(SERVER_PORT, 10) + 1 || 4000;
 
@@ -16,6 +16,7 @@ const WEBPACK_PORT = parseInt(SERVER_PORT, 10) + 1 || 4000;
  * Configuration for client bundle in development mode
  */
 module.exports = {
+  // Webpack Build Target
   target: "web",
   // Source Map Configuration for JS Bundle
   devtool: "source-map",
@@ -32,24 +33,23 @@ module.exports = {
       "./src/client/index.js",
     ],
     vendor: [
+      "immutable",
+      "prop-types",
       "react",
       "react-dom",
-      "prop-types",
       "redux",
       "react-redux",
       "reselect",
       "redux-saga",
     ],
-    tx: [
-      "./src/intl/index.js",
-    ],
+    tx: ["./src/intl/index.js"],
   },
   // Output for bundle
   output: {
     path: ASSETS_PATH,
     filename: "[name].js",
     chunkFilename: "[name].js",
-    publicPath: `http://${WEBPACK_HOST}:${WEBPACK_PORT}/build/`,
+    publicPath: `http://${WEBPACK_HOST}:${WEBPACK_PORT}/build/client/`,
   },
   // Modules for webpack to compile
   module: {
@@ -64,9 +64,7 @@ module.exports = {
             },
           },
         ],
-        include: [
-          path.resolve(__dirname, "../src/"),
-        ],
+        include: [path.resolve(__dirname, "../src/")],
       },
       {
         test: /\.js$/,
@@ -74,7 +72,10 @@ module.exports = {
           {
             loader: "cache-loader",
             options: {
-              cacheDirectory: path.resolve(__dirname, "../.cache-loader-client"),
+              cacheDirectory: path.resolve(
+                __dirname,
+                "../.cache-loader-client"
+              ),
             },
           },
           {
@@ -82,9 +83,7 @@ module.exports = {
             options: babelClientConfig,
           },
         ],
-        exclude: [
-          path.resolve(__dirname, "../node_modules/"),
-        ],
+        exclude: [path.resolve(__dirname, "../node_modules/")],
       },
       {
         test: /\.(otf|eot|svg|ttf|woff|woff2)$/,
@@ -110,7 +109,10 @@ module.exports = {
           {
             loader: "cache-loader",
             options: {
-              cacheDirectory: path.resolve(__dirname, "../.cache-loader-client"),
+              cacheDirectory: path.resolve(
+                __dirname,
+                "../.cache-loader-client"
+              ),
             },
           },
           {
@@ -125,9 +127,7 @@ module.exports = {
             loader: "postcss-loader",
           },
         ],
-        include: [
-          path.resolve(__dirname, "../src/"),
-        ],
+        include: [path.resolve(__dirname, "../src/")],
       },
     ],
   },
@@ -155,6 +155,7 @@ module.exports = {
       _FEATURE_: mapValues(featureFlags, value => JSON.stringify(value)),
     }),
 
+    // Write necessary statistics to `webpack-stats.json`
     function StatsWriterPlugin() {
       this.plugin("done", writeStats);
     },

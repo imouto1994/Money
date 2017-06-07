@@ -7,5 +7,5 @@ module.exports = mapValues(
     SERVER: null,
     WEBPACK_SERVER: null,
   }),
-  value => `MONEY_${value}`,
+  value => `MONEY_${value}`
 );

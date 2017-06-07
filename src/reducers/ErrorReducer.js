@@ -10,6 +10,12 @@ const initialState = new Map({
   errorsMap: new Map(),
 });
 
+/**
+ * Reducer for 'Error' module
+ * @param {Immutable.Map} state - current state of the module
+ * @param {ReduxAction} action - dispatched action
+ * @return {Immutable.Map}
+ */
 export default function errorReducer(state = initialState, action) {
   const { type, payload, err } = action;
   switch (type) {
@@ -28,8 +34,7 @@ export default function errorReducer(state = initialState, action) {
     default: {
       if (err != null) {
         return state.setIn(["errorsMap", type], err);
-      }
-      else {
+      } else {
         return state;
       }
     }

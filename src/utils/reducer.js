@@ -2,7 +2,7 @@ import { Iterable, fromJS } from "immutable";
 
 /**
  * Common dehydrate function for a module inside Redux store
- * @param {Immutable Iterable | Object } state
+ * @param {Immutable.Iterable | Object } state
  * @return {Object}
  */
 export function dehydrate(state) {
@@ -16,7 +16,7 @@ export function dehydrate(state) {
 /**
  * Common rehydrate function for a module inside Redux store
  * @param {Object} state
- * @return {Immutable Map}
+ * @return {Immutable.Map}
  */
 export function rehydrate(state) {
   return fromJS(state);

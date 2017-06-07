@@ -1,20 +1,13 @@
 import request from "superagent";
 
 /**
- * [makeRequest description]
- * @param {[type]} url [description]
- * @param {[type]} options [description]
- * @return {[type]} [description]
+ * Generic wrapper to make request to external server
+ * @param {String} url
+ * @param {Object} options
+ * @return {Promise}
  */
 export function makeRequest(url, options) {
-  const {
-    method,
-    query,
-    data,
-    files,
-    useForm,
-    headers = {},
-  } = options;
+  const { method, query, data, files, useForm, headers = {} } = options;
   const r = request[method](url);
 
   if (files != null) {
@@ -32,8 +25,7 @@ export function makeRequest(url, options) {
     // Multi-part Request
     if (files != null) {
       r.field(data);
-    }
-    else {
+    } else {
       r.send(data);
     }
   }
@@ -50,13 +42,11 @@ export function makeRequest(url, options) {
     r.query(query);
   }
 
-  return r
-    .then(res => res.body)
-    .catch(err => {
-      if (err.status != null) {
-        // eslint-disable-next-line no-param-reassign
-        err.statusCode = err.status;
-      }
-      return Promise.reject(err);
-    });
+  return r.then(res => res.body).catch(err => {
+    if (err.status != null) {
+      // eslint-disable-next-line no-param-reassign
+      err.statusCode = err.status;
+    }
+    return Promise.reject(err);
+  });
 }

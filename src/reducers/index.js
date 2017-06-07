@@ -5,7 +5,10 @@ import RouteReducer, { dehydrate as routeDehydrate } from "./RouteReducer";
 import ErrorReducer from "./ErrorReducer";
 import ApplicationReducer from "./ApplicationReducer";
 import FetchrReducer from "./FetchrReducer";
-import { dehydrate as defaultDehydrate, rehydrate as defaultRehydrate } from "../utils/reducer";
+import {
+  dehydrate as defaultDehydrate,
+  rehydrate as defaultRehydrate,
+} from "../utils/reducer";
 
 const reducers = combineReducers({
   Application: ApplicationReducer,
@@ -22,22 +25,17 @@ export default reducers;
  * @return {Object}
  */
 export function dehydrate(state) {
-  return mapValues(
-    state,
-    (value, key) => {
-      if (key === "Route") {
-        return routeDehydrate(value);
-      }
-      else if (key === "Fetchr") {
-        // 'Fetchr' module does not need to be rehydrated
-        // since we will create a new client instance over there
-        return undefined;
-      }
-      else {
-        return defaultDehydrate(value);
-      }
-    },
-  );
+  return mapValues(state, (value, key) => {
+    if (key === "Route") {
+      return routeDehydrate(value);
+    } else if (key === "Fetchr") {
+      // 'Fetchr' module does not need to be rehydrated
+      // since we will create a new client instance over there
+      return undefined;
+    } else {
+      return defaultDehydrate(value);
+    }
+  });
 }
 
 /**
@@ -46,8 +44,5 @@ export function dehydrate(state) {
  * @return {Object}
  */
 export function rehydrate(dehydratedState) {
-  return mapValues(
-    dehydratedState,
-    value => defaultRehydrate(value),
-  );
+  return mapValues(dehydratedState, value => defaultRehydrate(value));
 }

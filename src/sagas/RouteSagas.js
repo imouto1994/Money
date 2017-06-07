@@ -16,7 +16,6 @@ import {
   ROUTE_HISTORY_GO_FORWARD,
   ROUTE_HISTORY_GO_BACK,
 } from "../constants/Actions";
-import { BROWSER } from "../Config";
 
 const HISTORY_ACTIONS = [
   ROUTE_HISTORY_PUSH,
@@ -26,6 +25,11 @@ const HISTORY_ACTIONS = [
   ROUTE_HISTORY_GO_FORWARD,
 ];
 
+/**
+ * Create route recognizer to match URL with the corresponding route data
+ * @param {Array} routes - list of routes in the application
+ * @return {RouteRecognizer}
+ */
 function createRouteRecognizer(routes) {
   const router = new RouteRecognizer();
   forEach(routes, route => {
@@ -35,20 +39,32 @@ function createRouteRecognizer(routes) {
   return router;
 }
 
+/**
+ * Create a channel to queue list of location change events
+ * @param {History} history - history channel
+ * @return {EventChannel}
+ */
 function createLocationChannel(history) {
   return eventChannel(
-    emit => history.listen(location => {
-      emit(location);
-      // On server side, we will only need to emit location change once
-      // After that, we should end the channel
-      if (!BROWSER) {
-        emit(END);
-      }
-    }),
-    buffers.expanding(),
+    emit =>
+      history.listen(location => {
+        emit(location);
+        // On server side, we will only need to emit location change once
+        // After that, we should end the channel
+        if (!process.env.BROWSER) {
+          emit(END);
+        }
+      }),
+    buffers.expanding()
   );
 }
 
+/**
+ * Handle route change action
+ * @param {Iterator} iterator - iterator returned from the corresponding route saga handler for the target route
+ * @param {EventChannel} channel
+ * @return {Location} - location if there is another route change request when handler is being processed
+ */
 function* handleRoute(iterator, channel) {
   // Result of effect to-be-executed
   let effectRes;
@@ -74,14 +90,12 @@ function* handleRoute(iterator, channel) {
 
       if (main) {
         effectRes = main;
-      }
-      else if (location) {
+      } else if (location) {
         return {
           location,
         };
       }
-    }
-    else {
+    } else {
       effectRes = yield effect;
     }
   }
@@ -91,6 +105,11 @@ function* handleRoute(iterator, channel) {
   };
 }
 
+/**
+ * Watch events when the URL is changed
+ * @param {Array} routes - list of routes in the application
+ * @param {History} history - history instance
+ */
 function* watchLocationChange(routes, history) {
   const channel = createLocationChannel(history);
   const router = createRouteRecognizer(routes);
@@ -102,7 +121,9 @@ function* watchLocationChange(routes, history) {
       let routeArgs;
       let routeHandler;
       let RouteComponent;
-      const location = nextLocation != null ? nextLocation : yield take(channel, "");
+      const location = nextLocation != null
+        ? nextLocation
+        : yield take(channel, "");
       const { pathname: pathName, search: queryString } = location;
       const route = get(router.recognize(pathName), 0);
 
@@ -120,8 +141,7 @@ function* watchLocationChange(routes, history) {
         };
 
         yield put(updatePath(routeArgs));
-      }
-      else {
+      } else {
         // TODO: To be filled in
       }
 
@@ -132,23 +152,32 @@ function* watchLocationChange(routes, history) {
         nextLocation = loc;
       }
     }
-  }
-  catch (error) {
+  } catch (error) {
     // TODO: Add proper route handling
     // eslint-disable-next-line no-console
     console.log("Generic error handler for route handling");
   }
 }
 
+/**
+ * Watch actions related to History API
+ * @param {History} history - history instance
+ */
 function* watchHistoryActions(history) {
   // eslint-disable-next-line no-constant-condition
   while (true) {
     const { type, payload } = yield take(HISTORY_ACTIONS);
-    const historyFunction = history[camelCase(type.replace("ROUTE_HISTORY_", ""))];
+    const historyFunction =
+      history[camelCase(type.replace("ROUTE_HISTORY_", ""))];
     historyFunction(...payload);
   }
 }
 
+/**
+ * Saga to watch route activities
+ * @param {Array} routes - list of routes in the application
+ * @param {History} history - history instance for the application
+ */
 export function* watchRoutes(routes, history) {
   yield all([
     call(watchLocationChange, routes, history),

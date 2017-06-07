@@ -6,7 +6,6 @@ import { batchedSubscribe } from "redux-batched-subscribe";
 import { Iterable, Map } from "immutable";
 
 import rootReducer from "../reducers";
-import { NODE_ENV, BROWSER } from "../Config";
 
 // List of middlewares
 const middlewares = [];
@@ -14,8 +13,8 @@ const middlewares = [];
 const sagaMiddleware = createSagaMiddleware();
 middlewares.push(sagaMiddleware);
 // Add "redux-logger" on client side
-if (NODE_ENV === "development") {
-  if (BROWSER) {
+if (process.env.NODE_ENV === "development") {
+  if (process.env.BROWSER) {
     middlewares.push(
       createLogger({
         // Filter out private actions
@@ -26,12 +25,11 @@ if (NODE_ENV === "development") {
         stateTransformer(state) {
           if (Iterable.isIterable(state)) {
             return state.toJS();
-          }
-          else {
+          } else {
             return state;
           }
         },
-      }),
+      })
     );
   }
 }
@@ -39,8 +37,9 @@ if (NODE_ENV === "development") {
 /**
  * Initialize Redux
  * @param {Object} initialState - initial state for the store
- * @param {Fetchr Instance} fetchr - fetchr instance to be used throughout the session
+ * @param {Fetchr} fetchr - fetchr instance to be used throughout the session
  * This is necessary for the store to rehydrate on client side
+ * @return {[type]} [description]
  */
 export default function redux(initialState, fetchr) {
   const store = createStore(
@@ -50,12 +49,12 @@ export default function redux(initialState, fetchr) {
     compose(
       applyMiddleware(...middlewares),
       // Batch subscribe
-      batchedSubscribe(notify => notify()),
-    ),
+      batchedSubscribe(notify => notify())
+    )
   );
 
   // Enable Webpack hot module replacement for reducers
-  if (NODE_ENV === "development") {
+  if (process.env.NODE_ENV === "development") {
     if (module.hot) {
       module.hot.accept("../reducers", () => {
         store.replaceReducer(rootReducer);
